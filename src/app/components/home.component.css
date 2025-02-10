@@ -1,0 +1,86 @@
+/* home.component.css */
+.home-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .home-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .home-header h1 {
+    font-size: 36px;
+    color: #45a049;
+  }
+  
+  .home-header p {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .features {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .features h2 {
+    font-size: 28px;
+    color: #333;
+  }
+  
+  .feature-list {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+  .feature-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    width: 250px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature-item h3 {
+    font-size: 22px;
+    color: #45a049;
+  }
+  
+  .feature-item p {
+    font-size: 16px;
+    color: #444;
+  }
+  
+  .cta {
+    text-align: center;
+  }
+  
+  .cta h2 {
+    font-size: 28px;
+    color: #333;
+  }
+  
+  .cta p {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .cta-button {
+    margin: 10px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    background-color: #45a049;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #6a11cb;
+  }
+  

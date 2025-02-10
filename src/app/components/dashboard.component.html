@@ -1,0 +1,68 @@
+<!-- dashboard.component.html -->
+<app-navbar></app-navbar> 
+<h2>Dashboard</h2>
+
+<!-- Table to display fetched data -->
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Product Name</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Order Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of data">
+      <td>{{ item.id }}</td>
+      <td>{{ item.product_name }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.price }}</td>
+      <td>{{ item.order_date }}</td>
+      <td>
+        <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>
+        <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br><br>
+<!-- Add/Edit Order Form -->
+<div *ngIf="editingItem">
+  <h3>Edit Order</h3>
+  <form (ngSubmit)="updateData()">
+    <label for="product_name">Product Name:</label>
+    <input [(ngModel)]="editingItem.product_name" name="product_name" required />
+
+    <label for="quantity">Quantity:</label>
+    <input [(ngModel)]="editingItem.quantity" name="quantity" type="number" required />
+
+    <label for="price">Price:</label>
+    <input [(ngModel)]="editingItem.price" name="price" type="number" required />
+
+    <label for="order_date">Order Date:</label>
+    <input [(ngModel)]="editingItem.order_date" name="order_date" type="date" required />
+
+    <button type="submit" style="background-color: orange; color: white;">Update Order</button>
+  </form>
+</div>
+
+<!-- Add New Order Form -->
+<h3>Add New Order</h3>
+<form (ngSubmit)="addData()">
+  <label for="product_name">Product Name:</label>
+  <input [(ngModel)]="newItem.product_name" name="product_name" required />
+
+  <label for="quantity">Quantity:</label>
+  <input [(ngModel)]="newItem.quantity" name="quantity" type="number" required />
+
+  <label for="price">Price:</label>
+  <input [(ngModel)]="newItem.price" name="price" type="number" required />
+
+  <label for="order_date">Order Date:</label>
+  <input [(ngModel)]="newItem.order_date" name="order_date" type="date" required />
+
+  <button type="submit" style="background-color: green; color: white;">Add Order</button>
+</form>
