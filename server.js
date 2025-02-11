@@ -47,12 +47,15 @@ app.post('/api/login', async (req, res) => {
 
     // Verify the password (replace this with password hashing if using bcrypt)
     if (user.password === password) {
+      const token = jwt.sign({ id: user.id, role: user.role }, 'secret_key');
       res.status(200).json({
         message: 'Login successful',
+        token: token,
         user: {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role
         },
       });
     } else {
@@ -255,18 +258,64 @@ app.delete('/api/data/:id', async (req, res) => {
 //register.component
 app.use(bodyParser.json()); 
 
+const ADMIN_KEY = 'adminKey123';  // Replace with a secure key
+
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    console.log('Request body:', req.body);
+    const { name, email, password, role, key } = req.body;
+
+    if (!role) {
+      console.error('Role is missing!');
+    }
+    
     const client = await pool.connect();
 
-    // Insert and return the inserted user
+    let assignedRole = 'user'; // Default role is 'user'
+
+    // Check if the provided key matches the admin key
+    if (role === 'admin' && key === ADMIN_KEY) {
+      assignedRole = 'admin';
+    }
+
     const insertQuery = `
-      INSERT INTO users (name, email, password) 
-      VALUES ($1, $2, $3) 
+      INSERT INTO users (name, email, password, role) 
+      VALUES ($1, $2, $3, $4) 
+      RETURNING *`;
+
+    const result = await client.query(insertQuery, [name, email, password, assignedRole]);
+
+    client.release();
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      user: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error inserting user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.post('/api/register', async (req, res) => {
+  try {
+    const { name, email, password, role, key } = req.body;
+    const client = await pool.connect();
+
+    let assignedRole = 'user'; // Default role is 'user'
+
+    // Check if the provided key matches the admin key
+    if (role === 'admin' && key === ADMIN_KEY) {
+      assignedRole = 'admin';
+    }
+    // Insert and return the inserted user
+    // Force role to be user
+    const insertQuery = `
+      INSERT INTO users (name, email, password, role) 
+      VALUES ($1, $2, $3, $4) 
       RETURNING *`;
     
-    const result = await client.query(insertQuery, [name, email, password]);
+    const result = await client.query(insertQuery, [name, email, password,assignedRole]);
 
     client.release();
 

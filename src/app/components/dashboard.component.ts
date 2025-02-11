@@ -20,13 +20,16 @@ export class DashboardComponent implements OnInit {
   newItem: any = {}; // For new item data binding
   editingItem: any = null; // For editing item
   userId!: number; // Definite assignment assertion
+  userRole: string = '';
 
   constructor(private dataService: DataService, private router: Router) {}
 
   ngOnInit(): void {
+    
     this.fetchData();
     // Assuming the user ID is available after login (either from a service or localStorage)
-    this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Example: getting userId from localStorage
+    this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
+    this.userRole = localStorage.getItem('userRole')  || ''; // Retrieve the user role
   }
 
   fetchData(): void {

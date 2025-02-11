@@ -25,8 +25,9 @@ export class LoginComponent {
           console.log('Login successful:', response);
           alert('Login successful!');
           localStorage.setItem('userId', response.user.id); //store user info for table insert
-          // Redirect to the dashboard or another page
-          this.router.navigate(['/dashboard']);
+          localStorage.setItem('userRole', response.user.role); //store user role for access rights
+          // Redirect to home page
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           console.error('Error logging in:', error);

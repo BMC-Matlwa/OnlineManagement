@@ -1,20 +1,33 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-     /* Purple to blue gradient */
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(to bottom right, #f5f7fa, #c3cfe2); /* Light gradient background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+    
   }
   .container {
-    padding: 20px;
+    padding: 50px;  /* Similar to width */
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     background: linear-gradient(135deg, #6a11cb, #2575fc); /* Semi-transparent background */
     backdrop-filter: blur(10px); /* Glassmorphism effect */
+
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    text-align: center;
+    height: 500px; 
+    margin-top: 150px;
   }
+  .container * {
+    /* Ensure consistent spacing */
+   text-align: center; /* Center all child elements */
+ }
   form {
     margin-top: 10px;
   }

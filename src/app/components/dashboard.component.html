@@ -11,7 +11,7 @@
       <th>Quantity</th>
       <th>Price</th>
       <th>Order Date</th>
-      <th>Actions</th>
+      <th *ngIf="userRole === 'admin'">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -22,8 +22,10 @@
       <td>{{ item.price }}</td>
       <td>{{ item.order_date }}</td>
       <td>
-        <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>
+        <div *ngIf="userRole === 'admin'">
+        <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>&nbsp;&nbsp;
         <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
+      </div>
       </td>
     </tr>
   </tbody>
@@ -45,7 +47,7 @@
     <label for="order_date">Order Date:</label>
     <input [(ngModel)]="editingItem.order_date" name="order_date" type="date" required />
 
-    <button type="submit" style="background-color: orange; color: white;">Update Order</button>
+    <button *ngIf="userRole === 'admin'" type="submit" style="background-color: orange; color: white;">Update Order</button>
   </form>
 </div>
 
@@ -64,5 +66,5 @@
   <label for="order_date">Order Date:</label>
   <input [(ngModel)]="newItem.order_date" name="order_date" type="date" required />
 
-  <button type="submit" style="background-color: green; color: white;">Add Order</button>
+  <button type="submit" style="background-color: #4CAF50; color: white;">Add Order</button>
 </form>
