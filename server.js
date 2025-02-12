@@ -71,7 +71,7 @@ app.post('/api/login', async (req, res) => {
 //admin dashboard.component-------------------------------------------------------------
 app.get('/api/data', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM orders');
+    const result = await pool.query('SELECT * FROM products');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching data:', err);
@@ -105,19 +105,45 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
+app.post('/api/data', async (req, res) => {
+  try {
+    const { name, description, price, stock } = req.body;
+
+    // Insert new order into the database
+    const insertQuery = `
+      INSERT INTO products (name, description, price, stock)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *`;
+
+    const client = await pool.connect();
+    const result = await client.query(insertQuery, [name, description, price, stock]);
+
+    client.release();
+
+    // Send the added order back as the response
+    res.status(201).json({
+      message: 'Order added successfully',
+      order: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error adding order:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 app.put('/api/data/:id', async (req, res) => {
   const { id } = req.params;
-  const { product_name, quantity, price, order_date } = req.body;
+  const { name, description, price, stock } = req.body;
 
   const updateQuery = `
-    UPDATE orders 
-    SET product_name = $1, quantity = $2, price = $3, order_date = $4
+    UPDATE products 
+    SET name = $1, description = $2, price = $3, stock = $4
     WHERE id = $5 
     RETURNING *`;
 
   try {
     const client = await pool.connect();
-    const result = await client.query(updateQuery, [product_name, quantity, price, order_date, id]);
+    const result = await client.query(updateQuery, [name, description, price, stock, id]);
 
     client.release();
 
@@ -135,7 +161,7 @@ app.put('/api/data/:id', async (req, res) => {
 app.delete('/api/data/:id', async (req, res) => {
   const { id } = req.params;
 
-  const deleteQuery = 'DELETE FROM orders WHERE id = $1 RETURNING *';
+  const deleteQuery = 'DELETE FROM products WHERE id = $1 RETURNING *';
 
   try {
     const client = await pool.connect();
@@ -224,7 +250,7 @@ app.get('/api/orders', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'No orders found' });
     }
-    
+
     res.status(200).json(result.rows);
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -333,6 +359,38 @@ app.put('/api/products/:id/stock', async (req, res) => {
   }
 });
 
+app.post('/api/productsData', async (req, res) => {
+  const { name, description, price, stock } = req.body;
+
+  if (!name || !description || price == null || stock == null) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  try {
+    const insertQuery = `
+      INSERT INTO products (name, description, price, stock)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+
+    const client = await pool.connect();
+    try {
+      const result = await client.query(insertQuery, [name, description, price, stock]);
+      res.status(201).json({
+        message: 'Product added successfully',
+        product: result.rows[0],
+      });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
 app.get('/api/products/name/:productName', async (req, res) => {
   const { productName } = req.params;
 
@@ -352,6 +410,7 @@ app.get('/api/products/name/:productName', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 //Products table end-------------------------------------------------------------------------------------------

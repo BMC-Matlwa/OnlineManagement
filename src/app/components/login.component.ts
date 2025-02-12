@@ -23,7 +23,6 @@ export class LoginComponent {
       .subscribe({
         next: (response) => {
           console.log('Login successful:', response);
-          alert('Login successful!');
           localStorage.setItem('userId', response.user.id); //store user info for table insert
           localStorage.setItem('userRole', response.user.role); //store user role for access rights
           // Redirect to home page

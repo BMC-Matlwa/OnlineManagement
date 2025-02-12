@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
 import { Product } from '../product.model'; 
 import { NavbarComponent } from '../components/navbar.component'; 
 import { take } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+
 
 
 
@@ -22,7 +24,12 @@ export class AdminDashboardComponent implements OnInit {
 
   orders: any[] = [];
   data: any[] = []; // Array to hold fetched data
-  newItem: any = {}; // For new item data binding
+  newItem: any = {
+    name: '',
+    stock: null,
+    price: null,
+    description: null
+  }; // For new item data binding
   editingItem: any = null; // For editing item
   userId!: number; // Definite assignment assertion
   userRole: string = '';
@@ -144,23 +151,29 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
-  addData(): void {
-    if (this.userId && this.userId !== 0) {
-      this.newItem.user_id = this.userId; // Add the user_id to the new item
-      this.dataService.addData(this.newItem).subscribe(
-        (response) => {
-          this.data.push(response); // Add the new item to the data array
-          this.newItem = {}; // Clear form after adding
-        },
-        (error) => {
-          console.error('Error adding data:', error);
-        }
-      );
-    } else {
-      console.error('User ID is missing or invalid!');
-    }
+  addProductData() {
+    const orderData = {
+      name: this.newItem.name,
+      stock: this.newItem.stock,
+      price: this.newItem.price,
+      description: this.newItem.description
+    };
+
+    this.dataService.addProduct(orderData).pipe(
+      catchError((error) => {
+        console.error('Error adding order:', error);
+        alert('Failed to add order');
+        throw error;
+      })
+    ).subscribe(
+      (response) => {
+        console.log('Order added successfully:', response);
+        alert('Order added successfully!');
+        this.newItem = { name: '', stock: null, price: null }; // Reset form fields
+      }
+    );
   }
-  
+
 
   editData(item: any): void {
     this.editingItem = { ...item }; // Create a copy of the item to edit

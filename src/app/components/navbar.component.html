@@ -1,12 +1,12 @@
 <nav class="navbar">
     <div class="navbar-left">
       <a href="/home">Home</a>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/admin">Admin</a>
+      <a *ngIf="!isAdmin" href="/dashboard">Dashboard</a> <!--user dashboard -->
+       <a *ngIf="isAdmin" href="/admin">Dashboard</a> <!--admin dashboard -->
     </div>
     <div class="navbar-right">
-      <!-- Displaying logged-in user info (or any other content) -->
-      <p *ngIf="userName">Welcome, {{ userName }}!</p>
+      <p *ngIf="userName">Logged in: {{ userName }}</p>&nbsp;&nbsp;
+      <button *ngIf="userName" (click)="logout()">Logout</button>
     </div>
   </nav>
   

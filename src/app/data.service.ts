@@ -63,6 +63,9 @@ export class DataService {
     return this.http.put<any>(`http://localhost:3000/api/products/${productId}/stock`, { stock: newStock });
   }
 
+  addProduct(orderData: any): Observable<any> {
+    return this.http.post<any>(`http://localhost:3000/api/productsData/`, orderData);  // Add new data
+  }
   getProductByName(productName: string): Observable<any> {
     return this.http.get(`http://localhost:3000/api/products/name/${productName}`);
   }

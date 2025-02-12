@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service'; 
- 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class NavbarComponent implements OnInit {
   userName: string = ''; // Variable to store the user's name
+  isAdmin: boolean = false;
 
   constructor(private dataService: DataService) {}
 
@@ -26,6 +27,7 @@ export class NavbarComponent implements OnInit {
       this.dataService.getUserInfo(userId).subscribe(
         (response) => {
           this.userName = response.name || response.email; // Set userName from the server response
+          this.isAdmin = response.role === 'admin';
         },
         (error) => {
           console.error('Error fetching user info:', error);
@@ -35,4 +37,12 @@ export class NavbarComponent implements OnInit {
       console.error('User ID not found in localStorage');
     }
   }
+
+  logout(): void {
+    localStorage.removeItem('userId'); // Remove userId from localStorage
+    this.userName = ''; // Reset userName
+    this.isAdmin = false; // Reset isAdmin flag
+    window.location.href = '/'; // Redirect to home page
+  }
+  
 }
