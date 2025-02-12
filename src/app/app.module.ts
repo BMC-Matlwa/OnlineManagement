@@ -7,6 +7,7 @@ import { LoginComponent } from './components/login.component';
 import { RegisterComponent } from './components/register.component';
 import { DashboardComponent } from './components/dashboard.component';
 import { HomeComponent } from './components/home.component';
+import { AdminDashboardComponent } from './components/admin-dashboard.component';
 import { DataService } from './data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
@@ -17,7 +18,8 @@ import { FormsModule } from '@angular/forms';
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    HomeComponent  // Components should be in declarations
+    HomeComponent,
+    AdminDashboardComponent  // Components should be in declarations
   ],
   imports: [
     BrowserModule,

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';  
 import { NavbarComponent } from '../components/navbar.component'; 
+import { Product } from '../product.model';
 
 
 @Component({
@@ -16,80 +17,91 @@ import { NavbarComponent } from '../components/navbar.component';
     
 })
 export class DashboardComponent implements OnInit {
-  data: any[] = []; // Array to hold fetched data
-  newItem: any = {}; // For new item data binding
-  editingItem: any = null; // For editing item
+  products: any[] = [];
   userId!: number; // Definite assignment assertion
-  userRole: string = '';
+  
+  orders: any[] = []; //to view user orders
 
   constructor(private dataService: DataService, private router: Router) {}
 
   ngOnInit(): void {
-    
-    this.fetchData();
-    // Assuming the user ID is available after login (either from a service or localStorage)
+    this.fetchProducts();
+    this.fetchOrders(); // Load orders when the component initializes
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
-    this.userRole = localStorage.getItem('userRole')  || ''; // Retrieve the user role
   }
 
-  fetchData(): void {
-    this.dataService.getData().subscribe(
-      (response) => {
-        this.data = response;
-      },
-      (error) => {
-        console.error('Error fetching data:', error);
-      }
-    );
-  }
-
-  addData(): void {
-    if (this.userId && this.userId !== 0) {
-      this.newItem.user_id = this.userId; // Add the user_id to the new item
-      this.dataService.addData(this.newItem).subscribe(
+  fetchOrders(): void {
+    const userId = this.getLoggedInUserId(); // Assuming you have a method to get the logged-in user's ID
+    if (userId) {
+      this.dataService.getOrdersByUser(userId).subscribe(
         (response) => {
-          this.data.push(response); // Add the new item to the data array
-          this.newItem = {}; // Clear form after adding
+          this.orders = response;
+          console.log('Orders fetched for user:', this.orders);
         },
         (error) => {
-          console.error('Error adding data:', error);
+          console.error('Error fetching orders for user:', error);
         }
       );
     } else {
-      console.error('User ID is missing or invalid!');
-    }
-  }
-  
-
-  editData(item: any): void {
-    this.editingItem = { ...item }; // Create a copy of the item to edit
-  }
-
-  updateData(): void {
-    if (this.editingItem) {
-      this.dataService.updateData(this.editingItem.id, this.editingItem).subscribe(
-        (response) => {
-          const index = this.data.findIndex((item) => item.id === this.editingItem.id);
-          if (index !== -1) {
-            this.data[index] = this.editingItem; // Update the item in the array
-            this.editingItem = null; // Clear editing
-          }
-        },
-        (error) => {
-          console.error('Error updating data:', error);
-        }
-      );
+      console.error('User not logged in');
     }
   }
 
-  deleteData(id: number): void {
-    this.dataService.deleteData(id).subscribe(
+  getLoggedInUserId(): string | null {
+    return localStorage.getItem('userId');  // Replace 'userId' with the actual key you use
+  }
+
+  fetchProducts(): void {
+    this.dataService.getProducts().subscribe(
       (response) => {
-        this.data = this.data.filter((item) => item.id !== id); // Remove the deleted item
+        this.products = response;
       },
       (error) => {
-        console.error('Error deleting data:', error);
+        console.error('Error fetching products:', error);
       }
     );
   }
+
+  
+  placeOrder(product: any): void {
+    const quantity = product.orderQuantity;
+    if (!quantity || isNaN(+quantity) || +quantity <= 0) {
+      alert('Invalid quantity.');
+      return;
+    }
+  
+    const order = {
+      userId: this.userId,           // Ensure userId is set
+      productName: product.name,     // Product name
+      quantity: +quantity,           // Convert quantity to a number
+      price: product.price * +quantity  // Calculate the total price
+    };
+  
+    this.dataService.placeOrder(order).subscribe(
+      (response) => {
+        console.log('Order placed:', response);
+        alert('Order placed successfully.');
+
+        this.refreshProductList(); //to refresh the page after adding.
+      },
+      (error) => {
+        console.error('Error placing order:', error);
+        alert('Failed to place order.');
+      }
+    );
+  }
+  
+  refreshProductList(): void {
+    // Call your data service or API to get the updated list of products
+    this.dataService.getProducts().subscribe(
+      (response) => {
+        this.products = response;  // Update the products list
+      },
+      (error) => {
+        console.error('Error fetching updated products:', error);
+      }
+    );
+  }
+
+  
 }

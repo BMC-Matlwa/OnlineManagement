@@ -1,70 +1,42 @@
 <!-- dashboard.component.html -->
 <app-navbar></app-navbar> 
-<h2>Dashboard</h2>
 
-<!-- Table to display fetched data -->
-<table border="1">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Product Name</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Order Date</th>
-      <th *ngIf="userRole === 'admin'">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of data">
-      <td>{{ item.id }}</td>
-      <td>{{ item.product_name }}</td>
-      <td>{{ item.quantity }}</td>
-      <td>{{ item.price }}</td>
-      <td>{{ item.order_date }}</td>
-      <td>
-        <div *ngIf="userRole === 'admin'">
-        <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>&nbsp;&nbsp;
-        <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
-      </div>
-      </td>
-    </tr>
-  </tbody>
+<h2>Available Products</h2>
+<table>
+  <tr>
+    <th>Product Name</th>
+    <th>Available Stock</th>
+    <th>Order Quantity</th>
+    <th>Action</th>
+  </tr>
+  <tr *ngFor="let product of products">
+    <td>{{ product.name }}</td>
+    <td>{{ product.stock }}</td>
+    <td>
+      <input [(ngModel)]="product.orderQuantity" type="number" min="1" [max]="product.stock" placeholder="Enter quantity" />
+    </td>
+    <td>
+      <button (click)="placeOrder(product)">Purchase</button>
+    </td>
+  </tr>
 </table>
+
 <br><br>
-<!-- Add/Edit Order Form -->
-<div *ngIf="editingItem">
-  <h3>Edit Order</h3>
-  <form (ngSubmit)="updateData()">
-    <label for="product_name">Product Name:</label>
-    <input [(ngModel)]="editingItem.product_name" name="product_name" required />
+<h2>Your Orders</h2>
 
-    <label for="quantity">Quantity:</label>
-    <input [(ngModel)]="editingItem.quantity" name="quantity" type="number" required />
-
-    <label for="price">Price:</label>
-    <input [(ngModel)]="editingItem.price" name="price" type="number" required />
-
-    <label for="order_date">Order Date:</label>
-    <input [(ngModel)]="editingItem.order_date" name="order_date" type="date" required />
-
-    <button *ngIf="userRole === 'admin'" type="submit" style="background-color: orange; color: white;">Update Order</button>
-  </form>
-</div>
-
-<!-- Add New Order Form -->
-<h3>Add New Order</h3>
-<form (ngSubmit)="addData()">
-  <label for="product_name">Product Name:</label>
-  <input [(ngModel)]="newItem.product_name" name="product_name" required />
-
-  <label for="quantity">Quantity:</label>
-  <input [(ngModel)]="newItem.quantity" name="quantity" type="number" required />
-
-  <label for="price">Price:</label>
-  <input [(ngModel)]="newItem.price" name="price" type="number" required />
-
-  <label for="order_date">Order Date:</label>
-  <input [(ngModel)]="newItem.order_date" name="order_date" type="date" required />
-
-  <button type="submit" style="background-color: #4CAF50; color: white;">Add Order</button>
-</form>
+<table>
+  <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Order Date</th>
+      </tr>
+    </thead>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.product_name }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+    <td>{{ order.order_date }}</td>
+  </tr>
+</table>
