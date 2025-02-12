@@ -9,14 +9,18 @@ import { Product } from '../product.model';
 import { NavbarComponent } from '../components/navbar.component'; 
 import { take } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
-
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [MatTabsModule,
+    MatTableModule,
+    MatButtonModule,CommonModule, FormsModule, NavbarComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
@@ -34,6 +38,7 @@ export class AdminDashboardComponent implements OnInit {
   userId!: number; // Definite assignment assertion
   userRole: string = '';
   products: Product[] = [];
+  sumApprovedOrders: number = 0;
 
 
   constructor(private dataService: DataService, private router: Router) {}
@@ -45,6 +50,13 @@ export class AdminDashboardComponent implements OnInit {
     // Assuming the user ID is available after login (either from a service or localStorage)
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
     this.userRole = localStorage.getItem('userRole')  || ''; // Retrieve the user role
+    
+    const storedSum = localStorage.getItem('approvedOrdersSum');
+    if (storedSum) {
+      this.sumApprovedOrders = parseInt(storedSum, 10);
+    } else {
+      this.calculateSumOfApprovedOrders();
+    }
   }
 
   fetchOrders(): void {
@@ -59,6 +71,16 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
+  calculateSumOfApprovedOrders(): void {
+    this.sumApprovedOrders = this.orders
+    .filter(order => order.status === 'Approved') // Only include orders that are approved
+    .reduce((sum, order) => sum + (order.quantity || 0), 0);
+
+    localStorage.setItem('approvedOrdersSum', this.sumApprovedOrders.toString());
+
+    console.log(`Sum of approved orders: ${this.sumApprovedOrders}`);
+  }
+
   approveOrder(order: any): void {
     // const productName = order.name;
 
@@ -66,6 +88,8 @@ export class AdminDashboardComponent implements OnInit {
       (response) => {
         console.log('Order approved:', response);
         order.status = 'Approved';
+        console.log(`Updated status to Approved for: ${order.product_name}`);
+        this.calculateSumOfApprovedOrders();
 
 
         this.updateProductQuantity(order.product_name, order.quantity);
@@ -84,6 +108,7 @@ export class AdminDashboardComponent implements OnInit {
       (response) => {
         console.log('Order declined:', response);
         order.status = 'Declined';
+        this.calculateSumOfApprovedOrders();
 
 
         this.updateProductQuantity(order.product_name, order.quantity);

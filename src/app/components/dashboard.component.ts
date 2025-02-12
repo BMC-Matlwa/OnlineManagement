@@ -6,12 +6,18 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';  
 import { NavbarComponent } from '../components/navbar.component'; 
 import { Product } from '../product.model';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+
 
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-        imports: [CommonModule, FormsModule, NavbarComponent],
+        imports: [MatTabsModule,
+          MatTableModule,
+          MatButtonModule,CommonModule, FormsModule, NavbarComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css'],
     

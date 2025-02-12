@@ -1,6 +1,30 @@
 <!-- dashboard.component.html -->
 <app-navbar></app-navbar> 
+<h1>User Dashboard</h1>
+<mat-tab-group>
+  
+<mat-tab label="Orders">
+<h2>Your Orders</h2>
 
+<table>
+  <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Order Date</th>
+      </tr>
+    </thead>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.product_name }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+    <td>{{ order.order_date }}</td>
+  </tr>
+</table>
+</mat-tab>
+
+  <mat-tab label="Products">
 <h2>Available Products</h2>
 <table>
   <tr>
@@ -20,23 +44,5 @@
     </td>
   </tr>
 </table>
-
-<br><br>
-<h2>Your Orders</h2>
-
-<table>
-  <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Status</th>
-        <th>Order Date</th>
-      </tr>
-    </thead>
-  <tr *ngFor="let order of orders">
-    <td>{{ order.product_name }}</td>
-    <td>{{ order.quantity }}</td>
-    <td>{{ order.status }}</td>
-    <td>{{ order.order_date }}</td>
-  </tr>
-</table>
+</mat-tab>
+</mat-tab-group>

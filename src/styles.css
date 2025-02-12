@@ -87,23 +87,7 @@ button:hover {
     text-decoration: underline;
 }
 
-/* Orders Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
 
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-th {
-    background: green;
-    color: white;
-}
 
 /* Responsive */
 @media (max-width: 600px) {
@@ -111,3 +95,11 @@ th {
         width: 95%;
     }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+

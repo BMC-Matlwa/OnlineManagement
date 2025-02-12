@@ -11,6 +11,9 @@ import { AdminDashboardComponent } from './components/admin-dashboard.component'
 import { DataService } from './data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -22,6 +25,9 @@ import { FormsModule } from '@angular/forms';
     AdminDashboardComponent  // Components should be in declarations
   ],
   imports: [
+    MatTabsModule,
+    MatTableModule,
+    MatButtonModule,
     BrowserModule,
     AppRoutingModule,
     CommonModule,

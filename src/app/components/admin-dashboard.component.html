@@ -1,7 +1,11 @@
-<app-navbar></app-navbar> 
-<h2>Orders</h2>
-<table>
-    <thead>
+<app-navbar></app-navbar>
+<h1>Admin Dashboard</h1>
+
+<mat-tab-group>
+  <!-- Orders Tab -->
+  <mat-tab label="Orders">
+    <h2>Approve or Decline Orders</h2>
+    <table>
         <tr>
           <th>Product Name</th>
           <th>Quantity</th>
@@ -9,83 +13,83 @@
           <th>Order Date</th>
           <th>Actions</th>
         </tr>
-      </thead>
-    <tr *ngFor="let order of orders">
-      <td>{{ order.product_name }}</td>
-      <td>{{ order.quantity }}</td>
-      <td>{{ order.status }}</td>
-      <td>{{ order.order_date }}</td>
-      <td>
-        <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" style="background-color: #4CAF50; color: white;">Approve</button>&nbsp;&nbsp;
-        <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" style="background-color: red; color: white;">Decline</button>
-      </td>
-    </tr>
-  </table>
-  <br><br>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.product_name }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.status }}</td>
+          <td>{{ order.order_date }}</td>
+          <td>
+            <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" style="background-color: #4CAF50; color: white;">Approve</button>&nbsp;&nbsp;
+            <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" style="background-color: red; color: white;">Decline</button>
+          </td>
+        </tr>
+      
+    </table>
 
-<h2>VIEW AND ADD PRODUCTS</h2>
-<!-- Table to display fetched data -->
-<table border="1">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Product Name</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Description</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of data">
-      <td>{{ item.id }}</td>
-      <td>{{ item.name }}</td>
-      <td>{{ item.stock }}</td>
-      <td>{{ item.price }}</td>
-      <td>{{ item.description }}</td>
-      <td>
-        
-        <!-- <div *ngIf="userRole === 'user'">
-        <button (click)="purchaseItem(item)" style="background-color: orange; color: white;">Purchase</button>
-        </div> -->
-        <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>&nbsp;&nbsp;
-        <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br><br>
-<!-- Add/Edit Order Form -->
-<div *ngIf="editingItem">
-  <h3>Edit Order</h3>
-  <form (ngSubmit)="updateData()">
-    <label for="name">Product Name:</label>
-    <input [(ngModel)]="editingItem.name" name="name" required />
+    <div class="approved-orders-div">
+        <label for="approvedSum">Sum of Approved Orders:</label> &nbsp;&nbsp;
+        <input type="text" id="approvedSum" [value]="sumApprovedOrders" readonly />
+      </div>
+  </mat-tab>
 
-    <label for="stock">Quantity:</label>
-    <input [(ngModel)]="editingItem.stock" name="stock" type="number" required />
+  <!-- View and Add Products Tab -->
+  <mat-tab label="Products">
+    <h2>View and Add Products</h2>
+    <table border="1">
+        <tr>
+          <th>ID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let item of data">
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.stock }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.description }}</td>
+          <td>
+            <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>&nbsp;&nbsp;
+            <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
+          </td>
+        </tr>
+    </table>
 
-    <label for="price">Price:</label>
-    <input [(ngModel)]="editingItem.price" name="price" type="number" required />
-    
-    <button  type="submit" style="background-color: orange; color: white;">Update Order</button>
-  </form>
-</div>
+    <!-- Add New Product Form -->
+    <h2>Add New Product</h2>
+    <form (ngSubmit)="addProductData()">
+      <label for="name">Product Name:</label>
+      <input [(ngModel)]="newItem.name" name="name" required />
 
-<!-- Add New Order Form -->
-<h3>Add New Order</h3>
-<form (ngSubmit)="addProductData()">
-  <label for="name">Product Name:</label>
-  <input [(ngModel)]="newItem.name" name="name" required />
+      <label for="stock">Quantity:</label>
+      <input [(ngModel)]="newItem.stock" name="stock" type="number" required />
 
-  <label for="stock">Quantity:</label>
-  <input [(ngModel)]="newItem.stock" name="stock" type="number" required />
+      <label for="price">Price:</label>
+      <input [(ngModel)]="newItem.price" name="price" type="number" required />
 
-  <label for="price">Price:</label>
-  <input [(ngModel)]="newItem.price" name="price" type="number" required />
+      <label for="description">Description:</label>
+      <input [(ngModel)]="newItem.description" name="description" required />
 
-  <label for="description">Description:</label>
-  <input [(ngModel)]="newItem.description" name="description" required />  
+      <button type="submit" style="background-color: #4CAF50; color: white;">Add Product</button>
+    </form>
+  </mat-tab>
 
-  <button type="submit" style="background-color: #4CAF50; color: white;">Add Order</button>
-</form>
+  <!-- Edit Order Tab -->
+  <mat-tab *ngIf="editingItem" label="Edit Order">
+    <h2>Edit Order</h2>
+    <form (ngSubmit)="updateData()">
+      <label for="name">Product Name:</label>
+      <input [(ngModel)]="editingItem.name" name="name" required />
+
+      <label for="stock">Quantity:</label>
+      <input [(ngModel)]="editingItem.stock" name="stock" type="number" required />
+
+      <label for="price">Price:</label>
+      <input [(ngModel)]="editingItem.price" name="price" type="number" required />
+
+      <button type="submit" style="background-color: orange; color: white;">Update Order</button>
+    </form>
+  </mat-tab>
+</mat-tab-group>
