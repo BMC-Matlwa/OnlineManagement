@@ -71,7 +71,7 @@ app.post('/api/login', async (req, res) => {
 //admin dashboard.component-------------------------------------------------------------
 app.get('/api/data', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products');
+    const result = await pool.query('SELECT * FROM products Order by name ASC');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching data:', err);
@@ -244,7 +244,7 @@ app.post('/api/place-order', async (req, res) => {
 app.get('/api/orders', async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM orders');
+    const result = await client.query('SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.order_date ASC;');
     client.release();
     
     if (result.rows.length === 0) {

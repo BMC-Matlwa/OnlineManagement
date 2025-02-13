@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DataService } from '../data.service'; 
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,8 @@ import { Product } from '../product.model';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { ActivatedRoute } from '@angular/router';
+import { MatTabGroup } from '@angular/material/tabs';
 
 
 
@@ -22,18 +24,32 @@ import { MatButtonModule } from '@angular/material/button';
     styleUrls: ['./dashboard.component.css'],
     
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements AfterViewInit {
   products: any[] = [];
   userId!: number; // Definite assignment assertion
-  
+  userRole: string = '';
   orders: any[] = []; //to view user orders
+@ViewChild('tabGroup') tabGroup!: MatTabGroup; //to record the tabs
+  selectedTabIndex = 0;
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.fetchProducts();
     this.fetchOrders(); // Load orders when the component initializes
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
+    this.userRole = localStorage.getItem('userRole')  || ''; 
+
+    setTimeout(() => {
+      this.route.queryParams.subscribe((params) => {
+        const tab = params['tab'];
+        if (tab === 'products') {
+          this.tabGroup.selectedIndex = 1;  // 1 corresponds to Products tab
+        } else if (tab === 'orders') {
+          this.tabGroup.selectedIndex = 0;  // 0 corresponds to Orders tab
+        }
+      });
+    });
   }
 
   fetchOrders(): void {

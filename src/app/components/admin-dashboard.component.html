@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 <h1>Admin Dashboard</h1>
 
-<mat-tab-group>
+<mat-tab-group #tabGroup>
   <!-- Orders Tab -->
   <mat-tab label="Orders">
     <h2>Approve or Decline Orders</h2>
@@ -11,13 +11,15 @@
           <th>Quantity</th>
           <th>Status</th>
           <th>Order Date</th>
+          <th>Ordered By</th>
           <th>Actions</th>
         </tr>
         <tr *ngFor="let order of orders">
           <td>{{ order.product_name }}</td>
           <td>{{ order.quantity }}</td>
           <td>{{ order.status }}</td>
-          <td>{{ order.order_date }}</td>
+          <td>{{ formatOrderDate(order.order_date) }}</td>
+          <td>{{ order.name }}</td>
           <td>
             <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" style="background-color: #4CAF50; color: white;">Approve</button>&nbsp;&nbsp;
             <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" style="background-color: red; color: white;">Decline</button>
@@ -37,7 +39,7 @@
     <h2>View and Add Products</h2>
     <table border="1">
         <tr>
-          <th>ID</th>
+          <!-- <th>ID</th> -->
           <th>Product Name</th>
           <th>Quantity</th>
           <th>Price</th>
@@ -45,7 +47,7 @@
           <th>Actions</th>
         </tr>
         <tr *ngFor="let item of data">
-          <td>{{ item.id }}</td>
+          <!-- <td>{{ item.id }}</td> -->
           <td>{{ item.name }}</td>
           <td>{{ item.stock }}</td>
           <td>{{ item.price }}</td>

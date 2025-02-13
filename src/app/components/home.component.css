@@ -42,8 +42,17 @@
     width: 250px;
     margin: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;  /* Indicate that it's clickable */
+    transition: all 0.3s ease;  /* Smooth transition */
   }
   
+  .feature-item:hover {
+    background-color: #bcf1be;  /* Change background to green on hover */
+    color: white;  /* Change text color to white */
+    transform: scale(1.05);  /* Slightly enlarge on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);  /* More pronounced shadow */
+}
+
   .feature-item h3 {
     font-size: 22px;
     color: #45a049;

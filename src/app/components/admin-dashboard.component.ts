@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,8 @@ import { catchError } from 'rxjs/operators';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTabGroup } from '@angular/material/tabs';
+import { ActivatedRoute } from '@angular/router';
 
 
 
@@ -24,7 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements AfterViewInit {
 
   orders: any[] = [];
   data: any[] = []; // Array to hold fetched data
@@ -39,24 +41,47 @@ export class AdminDashboardComponent implements OnInit {
   userRole: string = '';
   products: Product[] = [];
   sumApprovedOrders: number = 0;
+  @ViewChild('tabGroup') tabGroup!: MatTabGroup; //to record the tabs
+  selectedTabIndex = 0;
+
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
 
-  constructor(private dataService: DataService, private router: Router) {}
-
-
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.fetchOrders(); // Load orders when the component initializes
     this.fetchData();
     // Assuming the user ID is available after login (either from a service or localStorage)
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
     this.userRole = localStorage.getItem('userRole')  || ''; // Retrieve the user role
     
+    //calculate the sum of orders approved and record the last sum.
     const storedSum = localStorage.getItem('approvedOrdersSum');
     if (storedSum) {
       this.sumApprovedOrders = parseInt(storedSum, 10);
     } else {
       this.calculateSumOfApprovedOrders();
     }
+    //get orders and username
+    this.dataService.getOrders().subscribe((response) => {
+      this.orders = response;
+    });
+
+    //read tab query and select appropriate tab for home redirection
+    setTimeout(() => {
+      this.route.queryParams.subscribe((params) => {
+        const tab = params['tab'];
+        if (tab === 'products') {
+          this.tabGroup.selectedIndex = 1;  // 1 corresponds to Products tab
+        } else if (tab === 'orders') {
+          this.tabGroup.selectedIndex = 0;  // 0 corresponds to Orders tab
+        }
+      });
+    });
+  }
+
+  formatOrderDate(orderDate: string): string {
+    const date = new Date(orderDate);
+    return date.toLocaleString(); // You can customize the format here
   }
 
   fetchOrders(): void {

@@ -16,8 +16,9 @@
     <p>Your one-stop for placing orders, managing orders and user data.</p>
   </header>
 
-  <section class="features">
-    <h2>Features</h2>
+  <!-- only seen by admin -->
+  <section *ngIf="userRole === 'admin'" class="features" style="cursor: pointer;" (click)="goToAdmin('orders')">
+    <h2>Admin Features</h2>
     <div class="feature-list">
       <div class="feature-item">
         <h3>Manage Orders</h3>
@@ -27,19 +28,27 @@
         <h3>More features loading...</h3>
         <p>User roles and more.</p>
       </div> -->
-      <div class="feature-item">
+      <div class="feature-item"  (click)="goToAdmin('products')">
         <h3>Products Dashboard</h3>
         <p>Get detailed insights of products. See real-time stock on hand.</p>
       </div>
     </div>
   </section>
 
-  <!-- <section class="cta">
-    <h2>Get Started Now!</h2>
-    <p>Sign up or log in to start ordering or managing your orders.</p> 
-  <button [routerLink]="'/'" class="cta-button">Login</button>
-  <button [routerLink]="'/register'" class="cta-button">Register</button>
-  </section> -->
+  <!-- seen by users only -->
+  <section *ngIf="userRole === 'user'" class="features" style="cursor: pointer;" (click)="goToDashboard('orders')">
+    <h2>User Features</h2>
+    <div class="feature-list">
+      <div class="feature-item" (click)="goToDashboard('orders')">
+        <h3>Order History</h3>
+        <p>View all your past orders and track their status.</p>
+      </div>
+      <div class="feature-item" (click)="goToDashboard('products')">
+        <h3>Product Catalog</h3>
+        <p>Browse through our product catalog and place orders easily.</p>
+      </div>
+    </div>
+  </section>
 </div>
 
 </body>
