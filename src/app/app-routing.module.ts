@@ -8,6 +8,10 @@ import { AdminDashboardComponent } from './components/admin-dashboard.component'
 import { CommonModule } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { AuthGuard } from './auth.guard';
+import { UserDetailsComponent } from './components/user-details.component';
+import { ForgotPasswordDialogComponent } from './components/forgot-password-dialog.component';
+import { ForgotPasswordComponent } from './components/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password.component';
 
 
 const routes: Routes = [
@@ -15,11 +19,15 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'admin', component: AdminDashboardComponent }
+  { path: 'admin', component: AdminDashboardComponent },
+  { path: 'user-details', component: UserDetailsComponent},
+//   { path: 'reset-password', component: ForgotPasswordDialogComponent},
+  { path: 'forgot-password', component: ForgotPasswordComponent},
+  { path: 'reset-password/', component: ResetPasswordComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes), CommonModule, FormsModule],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

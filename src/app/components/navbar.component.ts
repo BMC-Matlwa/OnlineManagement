@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class NavbarComponent implements OnInit {
   userName: string = ''; // Variable to store the user's name
   isAdmin: boolean = false;
+  menuOpen = false;
 
   constructor(private dataService: DataService) {}
 
@@ -43,6 +44,19 @@ export class NavbarComponent implements OnInit {
     this.userName = ''; // Reset userName
     this.isAdmin = false; // Reset isAdmin flag
     window.location.href = '/'; // Redirect to home page
+    console.log('User logged out');
+    this.menuOpen = false;
   }
+
+  // logout() {
+  //   console.log('User logged out');
+  //   this.menuOpen = false;
+  //   // Add actual logout logic, like clearing tokens or redirecting to login
+  // }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  
   
 }

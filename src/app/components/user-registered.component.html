@@ -1,0 +1,54 @@
+<app-navbar></app-navbar>
+<div class="user-registered-container">
+    <h2>Registered Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Gender</th>
+          <th>Date of Birth</th>
+          <th>Password</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+            <ng-container *ngIf="!user.editMode; else editForm">
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.address }}</td>
+          <td>{{ user.gender }}</td>
+          <td>{{ formatOrderDate(user.dob) }}</td>
+          <td>********</td> <!-- <td>{{ user.password }}</td> -->
+          <td>
+            <button (click)="toggleEdit(user)">Edit</button>
+          </td>
+        </ng-container>
+        <ng-template #editForm>
+          <td><input [(ngModel)]="user.name" /></td>
+          <td><input [(ngModel)]="user.email" /></td>
+          <td><input [(ngModel)]="user.phone" /></td>
+          <td><input [(ngModel)]="user.address" /></td>
+          <td>
+            <select [(ngModel)]="user.gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </td>
+          <td><input type="date" [(ngModel)]="user.dob" /></td>
+          <td><input type="password" [(ngModel)]="user.password" /></td>
+          <td>
+            <button (click)="saveUser(user)">Save</button>
+            <button (click)="cancelEdit(user)">Cancel</button>
+          </td>
+        </ng-template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

@@ -1,0 +1,26 @@
+table {
+    width: 80%;
+  max-width: 800px; /* Optional: Set a max width */
+  border-collapse: collapse;
+  margin: 20px auto;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    
+  }
+  
+  th {
+    background-color: #4CAF50;
+    font-weight: bold;
+    color: #ddd;
+  }
+
+  h2 {
+    color: #4CAF50; /* Green color */
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 20px;
+  }

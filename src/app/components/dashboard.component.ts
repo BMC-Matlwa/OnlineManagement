@@ -53,7 +53,7 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   fetchOrders(): void {
-    const userId = this.getLoggedInUserId(); // Assuming you have a method to get the logged-in user's ID
+    const userId = this.getLoggedInUserId(); 
     if (userId) {
       this.dataService.getOrdersByUser(userId).subscribe(
         (response) => {
@@ -69,8 +69,13 @@ export class DashboardComponent implements AfterViewInit {
     }
   }
 
+  formatOrderDate(orderDate: string): string {
+    const date = new Date(orderDate);
+    return date.toLocaleString(); // You can customize the format here
+  }
+
   getLoggedInUserId(): string | null {
-    return localStorage.getItem('userId');  // Replace 'userId' with the actual key you use
+    return localStorage.getItem('userId');  
   }
 
   fetchProducts(): void {
@@ -87,7 +92,7 @@ export class DashboardComponent implements AfterViewInit {
   
   placeOrder(product: any): void {
     const quantity = product.orderQuantity;
-    if (!quantity || isNaN(+quantity) || +quantity <= 0) {
+    if (!quantity || isNaN(+quantity) || +quantity <= 0) { //if quantity is null or not a number or less/= than 0.
       alert('Invalid quantity.');
       return;
     }

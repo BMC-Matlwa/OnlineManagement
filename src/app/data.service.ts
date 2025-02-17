@@ -73,4 +73,49 @@ export class DataService {
   getOrdersByUser(userId: string): Observable<any> {
     return this.http.get(`http://localhost:3000/api/orders/user/${userId}`);
   }
+
+  getProfile(userId: number): Observable<any> {
+    // Replace the URL with your real API endpoint
+    return this.http.get<any>(`http://localhost:3000/api/profile/${userId}`);
+  }
+  
+  updateProfile(userId: number, profileData: any): Observable<any> {
+    // Replace the URL with your real API endpoint
+    return this.http.put<any>(`http://localhost:3000/api/profile/${userId}`, profileData);
+  }
+
+  updateUser(userId: number, userData: any):  Observable<any> {
+    return this.http.put(`http://localhost:3000/api/users/${userId}`, userData);
+  }
+  
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:3000/api/users`);
+  }
+  
+  updateUserP(userId: number, userData: any):  Observable<any> {
+    return this.http.put(`http://localhost:3000/api/user/${userId}`, userData);
+  }
+
+  forgotPassword(email: string) { //forgot-password-dialog
+    const url = 'http://localhost:3000/api/forgot-password'; // Replace with your actual API endpoint
+    return this.http.post(url, { email });
+  }
+  
+  resetPassword1(email: string): Observable<any> {
+    return this.http.post(`http://localhost:3000/reset-password`, { email });
+  }
+
+  // resetPassword(token: string, newPassword: string) {
+  //   return this.http.post('http://localhost:3000/reset-password/confirm', { token, newPassword });
+  // }
+
+  resetPassword(payload: { token: string, newPassword: string }): Observable<any> {
+    return this.http.post<any>(`http://localhost:3000/reset-password/confirm`, payload);
+  }
+  
+
+  updatePassword(token: string | null, newPassword: string): Observable<any> {
+    return this.http.post('http://localhost:3000/update-password', { token, newPassword });
+  }
+  
 }

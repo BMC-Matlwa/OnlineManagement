@@ -5,9 +5,13 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const nodemailer = require("nodemailer");
+const sequelize = require("./src/app/models/db"); // Import Sequelize instance
+const User = require("./src/app/models/user"); 
+const router = express.Router();
 const app = express();
-app.use(cors());
+
+const JWT_SECRET = 'your-secret-key';
 
 const pool = new Pool({
     user: 'postgres',
@@ -25,6 +29,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
+app.use(router);
 
 // Login.component -------------------------------------------------------------------------------------------
 app.post('/api/login', async (req, res) => {
@@ -45,27 +52,244 @@ app.post('/api/login', async (req, res) => {
 
     const user = result.rows[0];
 
-    // Verify the password (replace this with password hashing if using bcrypt)
-    if (user.password === password) {
-      const token = jwt.sign({ id: user.id, role: user.role }, 'secret_key');
+   
+    //  Detect if password is plain text (not hashed)
+    if (!user.password.startsWith("$2b$")) { // bcrypt hashes always start with "$2a$"
+      if (user.password === password) {
+        // Hash the plain-text password and update it in the database
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashedPassword, email]);
+        console.log(`Password for ${email} was hashed and updated.`);
+      } else {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+    } else {
+      //  Compare hashed password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+    }
+
+      // Generate JWT token
+      const token = jwt.sign({ id: user.id, role: user.role }, "secret_key");
+
       res.status(200).json({
-        message: 'Login successful',
+        message: "Login successful",
         token: token,
         user: {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
         },
       });
-    } else {
-      res.status(401).json({ message: 'Invalid password' });
-    }
+    // Verify the password old way (not hashed)
+    // if (user.password === password) {
+    //   const token = jwt.sign({ id: user.id, role: user.role }, 'secret_key');
+    //   res.status(200).json({
+    //     message: 'Login successful',
+    //     token: token,
+    //     user: {
+    //       id: user.id,
+    //       name: user.name,
+    //       email: user.email,
+    //       role: user.role
+    //     },
+    //   });
+    // } else {
+    //   res.status(401).json({ message: 'Invalid password' });
+    // }
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+//forgot password endpoint
+
+app.post('/api/forgot-password', (req, res) => {
+  const { email } = req.body;
+
+  const user = users.find((u) => u.email === email);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+
+  const resetLink = `http://localhost:4200/reset-password/${token}`;
+
+  // Send the reset link via email
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'your-email@gmail.com', // Replace with your email
+      pass: 'your-email-password'   // Replace with your email password
+    }
+  });
+
+  const mailOptions = {
+    from: 'your-email@gmail.com',
+    to: email,
+    subject: 'Password Reset Request',
+    html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 1 hour.</p>`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      return res.status(500).json({ message: 'Failed to send email' });
+    }
+    res.json({ message: 'Password reset link sent to your email' });
+  });
+});
+
+
+
+// Endpoint to request password reset
+// router.post("/reset-password", async (req, res) => {
+//     const { email } = req.body;
+
+//     // Check if user exists
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//         return res.status(400).json({ message: "User not found" });
+//     }
+
+//     // Generate reset token (valid for 15 minutes)
+//     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "15m" });
+
+//     // Send reset email
+//     const transporter = nodemailer.createTransport({
+//         service: "gmail",
+//         auth: {
+//             user: "matlwamasego@gmail.com", // Replace with your email
+//             pass: "_Masego146"  // Replace with your email password
+//         }
+//     });
+
+//     const resetLink = `http://localhost:4200/reset-password?token=${token}`;
+//     const mailOptions = {
+//         from: "matlwamasego@gmail.com",
+//         to: user.email,
+//         subject: "Password Reset Request",
+//         html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 15 minutes.</p>`
+//     };
+
+//     try {
+//         await transporter.sendMail(mailOptions);
+//         res.json({ message: "Password reset email sent!" });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error sending email", error });
+//     }
+// });
+
+// module.exports = router;
+router.post("/reset-password", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if user exists
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate a token (valid for 1 hour)
+    const token = jwt.sign({ email }, "your_jwt_secret", { expiresIn: "1h" });
+
+    // Save token to the database
+    await pool.query("UPDATE users SET reset_token = $1 WHERE email = $2", [token, email]);
+
+    // Send email with reset link
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "deviieydevendranath@gmail.com",
+        pass: "kldu rwun zuyr wylt",
+      },
+    });
+
+    
+    const mailOptions = {
+      from: "deviieydevendranath@gmail.com",
+      to: email,
+      subject: "Password Reset",
+      text: `Click the link to reset your password: http://localhost:4200/reset-password/${token}`,
+    };
+    console.log("Sending password reset email to:", email);
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Password reset link sent!" });
+
+  } catch (error) {
+    console.error("Error resetting password:", error);  // Log the error to console
+    res.status(500).json({ message: "Server error", error: error.message });  // Send detailed error in response
+  }
+});
+
+
+router.post("/reset-password/confirm", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verify the reset token
+    const decoded = jwt.verify(token, "your_jwt_secret");
+
+    // Retrieve the email from the decoded token
+    const email = decoded.email;
+
+    // Check if the token matches the one stored in the database
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length === 0 || userCheck.rows[0].reset_token !== token) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    // Hash the new password
+    const bcrypt = require("bcryptjs");
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password in the database
+    await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashedPassword, email]);
+
+    // Clear the reset token from the database (security measure)
+    await pool.query("UPDATE users SET reset_token = NULL WHERE email = $1", [email]);
+
+    res.json({ message: "Password updated successfully" });
+    
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(400).json({ message: "Invalid or expired token" });
+  }
+});
+
+
+
+
+// Endpoint to reset password
+router.post("/update-password", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+      // Verify token
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (!user) {
+          return res.status(400).json({ message: "Invalid token or user not found" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.json({ message: "Password reset successful!" });
+  } catch (error) {
+      res.status(400).json({ message: "Invalid or expired token" });
+  }
+});
+
 // Login.component end -------------------------------------------------------------------------------------------
 
 //admin dashboard.component-------------------------------------------------------------
@@ -79,7 +303,7 @@ app.get('/api/data', async (req, res) => {
   }
 });
 
-app.post('/api/data', async (req, res) => {
+app.post('/api/data', async (req, res) => {  
   try {
     const { user_id, product_name, quantity, price, order_date } = req.body;
 
@@ -182,7 +406,7 @@ app.delete('/api/data/:id', async (req, res) => {
 
 //admin dashboard.component end-------------------------------------------------------------
 
-
+//user data --------------------------------------------------------------------
 // Fetch user info by userId
 app.get('/api/users/:id', async (req, res) => {
   try {
@@ -205,6 +429,58 @@ app.get('/api/users/:id', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+//ADD TO USERS TABLE
+app.put('/api/users/:id', (req, res) => { //for user updating
+  const userId = req.params.id;
+  const { name, email, phone, address, gender, dob } = req.body;
+
+  const query = `
+    UPDATE users
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6
+    WHERE id = $7
+  `;
+  const values = [name, email, phone, address, gender, dob, userId];
+
+  pool.query(query, values)
+  .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
+  .catch((error) => {
+    console.error('Error updating user details:', error);
+    res.status(500).json({ error: 'Error updating user details' });
+  });
+});
+
+app.put('/api/user/:id', (req, res) => { //for admin updating
+  const userId = req.params.id;
+  const { name, email, phone, address, gender, dob, password } = req.body;
+
+  const query = `
+    UPDATE users
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, password = $8
+    WHERE id = $7
+  `;
+  const values = [name, email, phone, address, gender, dob, userId, password] ;
+
+  pool.query(query, values)
+  .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
+  .catch((error) => {
+    console.error('Error updating user details:', error);
+    res.status(500).json({ error: 'Error updating user details' });
+  });
+});
+
+app.get('/api/users', (req, res) => {
+  const query = 'SELECT * FROM users order by id asc';
+  pool.query(query)
+    .then((result) => res.json(result.rows))
+    .catch((error) => {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    });
+});
+
+
+//user data end -----------------------------------------------------------------
 
 //Orders Table -----------------------------------------------------------------------------------------------------
 
@@ -241,7 +517,7 @@ app.post('/api/place-order', async (req, res) => {
 });
 
 // Fetch all orders (Admin)
-app.get('/api/orders', async (req, res) => {
+app.get('/api/orders', async (req, res) => { //used when you click the purchase button
   try {
     const client = await pool.connect();
     const result = await client.query('SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.order_date ASC;');

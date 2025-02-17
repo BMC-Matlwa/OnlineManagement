@@ -14,6 +14,16 @@ import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { UserDetailsComponent } from './components/user-details.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ForgotPasswordDialogComponent } from './components/forgot-password-dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ForgotPasswordComponent } from './components/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password.component';
+// import { RouterModule } from '@angular/router';
+import { ValidateEqualDirective } from './validate-equal.directive';
 
 @NgModule({
   declarations: [
@@ -22,9 +32,16 @@ import { MatButtonModule } from '@angular/material/button';
     RegisterComponent,
     DashboardComponent,
     HomeComponent,
-    AdminDashboardComponent  // Components should be in declarations
+    AdminDashboardComponent,
+    UserDetailsComponent, 
+    ForgotPasswordDialogComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
+    ValidateEqualDirective  // Components should be in declarations
   ],
   imports: [
+    MatFormFieldModule,
+    MatInputModule,
     MatTabsModule,
     MatTableModule,
     MatButtonModule,
@@ -33,8 +50,16 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     HttpClientModule,
     FormsModule,
-    HomeComponent  // FormsModule should be in imports
+    HomeComponent,
+    MatDialogModule,
+    BrowserAnimationsModule
+    // ,
+    // RouterModule  // FormsModule should be in imports
   ],
+//   exports: [                 // If you need to use the directive in other modules, export it
+//     ValidateEqualDirective,
+//     ResetPasswordComponent
+//   ],
   providers: [DataService],
   bootstrap: [AppComponent]
 })

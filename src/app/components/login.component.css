@@ -58,3 +58,34 @@ body {
   button:hover {
     background-color: pink;
   }
+
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  .link-button {
+    background: none;
+    border: none;
+    color: white;  /* Match the other link color */
+    text-decoration: underline;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .link-button:hover {
+    color: lightgray; /* Subtle hover effect */
+  }
+  
+  a {
+    color: white;
+    font-size: 16px;
+  }
+
+  .error-message {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  

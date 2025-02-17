@@ -6,21 +6,65 @@ h2 {
     margin-bottom: 20px;
   }
 
-  .approved-orders-div {
+  /* #approvedSum {
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px;
+    text-align: center;
+    font-size: 1rem;
+  } */
+
+  .approved-orders-div{
     margin-top: 20px; /* Optional: Adjust spacing */
-    width: 80%; /* Same width as table */
+    width: 20%; /* Same width as table */
   margin: 0 auto; /*to match the margin of the tables*/
   }
 
-  input[type="text"] {
-    width: 100%; /* Make the input take full width of the div */
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border: 1px solid #4CAF50;
-    background-color: #cbebcc;
-
+  .declined-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+    width: 20%; /* Same width as table */
+  margin: 0 auto; /*to match the margin of the tables*/
   }
+
+ .pending-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+     width: 20%; /*Same width as table */
+  margin: 0 auto; /*to match the margin of the tables*/
+  }
+
+  .approved-input {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #155724;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
+  .declined-input {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #721c24;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
+  .pending-input {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #856404;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
   
   table {
     width: 80%;
@@ -49,6 +93,8 @@ h2 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width:100%;
+    margin-top : 10px;
   }
   
   button:hover {
@@ -123,11 +169,38 @@ h2 {
     border-radius: 0 0 8px 8px;
   }
 
-  #approvedSum {
-    margin-top: 10px;
-    padding: 5px;
-    width: 100px;
-    text-align: center;
-    font-size: 1rem;
+  
+  
+  
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+  
+  /* input {
+    width: 150px;
+    text-align: right;
+  } */
+  
+  /* .order-sum-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px;
+  } */
+  
+  /* .order-sum-container div {
+    display: flex;
+    align-items: center;
+  }
+   */
+  /* input {
+    padding: 5px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+  } */
+  
   

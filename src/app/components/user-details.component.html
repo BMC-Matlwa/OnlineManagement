@@ -1,0 +1,44 @@
+<app-navbar></app-navbar>
+<div class="user-details-container">
+    <h2>My Details</h2><!-- <h2>{{ userName }}'s Details</h2> -->
+    <div class="detail-item">
+      <label>Name:</label>
+      <span *ngIf="!editMode">{{ user.name }}</span>
+      <input *ngIf="editMode" [(ngModel)]="user.name" />
+    </div>
+    <div class="detail-item">
+      <label>Email:</label>
+      <span *ngIf="!editMode">{{ user.email }}</span>
+      <input *ngIf="editMode" [(ngModel)]="user.email" />
+    </div>
+    <div class="detail-item">
+      <label>Phone:</label>
+      <span *ngIf="!editMode">{{ user.phone }}</span>
+      <input *ngIf="editMode" [(ngModel)]="user.phone" />
+    </div>
+    <div class="detail-item">
+      <label>Address:</label>
+      <span *ngIf="!editMode">{{ user.address }}</span>
+      <textarea *ngIf="editMode" [(ngModel)]="user.address"></textarea>
+    </div>
+    <div class="detail-item">
+        <label>Gender:</label>
+        <span *ngIf="!editMode">{{ user.gender }}</span>
+        <select *ngIf="editMode" [(ngModel)]="user.gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    <div class="detail-item">
+        <label>Date of Birth:</label>
+        <span *ngIf="!editMode">{{ user.dob | date }}</span>
+        <input *ngIf="editMode" type="date" [(ngModel)]="user.dob" />
+      </div>
+    <div class="button-group">
+      <button (click)="toggleEditMode()" *ngIf="!editMode">Edit</button>
+      <button (click)="saveDetails()" *ngIf="editMode">Save</button>
+      <button (click)="toggleEditMode()" *ngIf="editMode">Cancel</button>
+    </div>
+  </div>
+  
