@@ -1,11 +1,19 @@
 <app-navbar></app-navbar>
 <div class="user-registered-container">
     <h2>Registered Users</h2>
+
+     <!-- Search Bar -->
+     <div class="search-container">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search users..." />&nbsp;&nbsp;&nbsp;
+        <button (click)="searchUsers()">Search</button>
+    </div>
+    
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Email</th>
+          <th>Role</th>
           <th>Phone</th>
           <th>Address</th>
           <th>Gender</th>
@@ -15,10 +23,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of paginatedUsers">
             <ng-container *ngIf="!user.editMode; else editForm">
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
           <td>{{ user.phone }}</td>
           <td>{{ user.address }}</td>
           <td>{{ user.gender }}</td>
@@ -31,6 +40,14 @@
         <ng-template #editForm>
           <td><input [(ngModel)]="user.name" /></td>
           <td><input [(ngModel)]="user.email" /></td>
+          <td>
+            <select [(ngModel)]="user.role">
+                <option value="User">User</option>
+              <option value="Admin">Admin</option>
+              <option value="Inactive">Deactivate</option>
+            </select>
+        </td>
+
           <td><input [(ngModel)]="user.phone" /></td>
           <td><input [(ngModel)]="user.address" /></td>
           <td>
@@ -50,5 +67,12 @@
         </tr>
       </tbody>
     </table>
+
+     <!-- Pagination Controls -->
+  <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
   </div>
   

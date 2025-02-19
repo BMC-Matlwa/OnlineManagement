@@ -31,13 +31,18 @@ h2 {
      width: 20%; /*Same width as table */
   margin: 0 auto; /*to match the margin of the tables*/
   }
-
+.total-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+     width: 20%; /*Same width as table */
+  margin: 0 auto;
+}
   .approved-input {
     background-color: #d4edda;
     color: #155724;
     border-color: #155724;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.5rem;
+    font: bolder;
     margin-top: 10px;
     padding: 5px;
     width: 100px
@@ -48,7 +53,7 @@ h2 {
     color: #721c24;
     border-color: #721c24;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.5rem;
     margin-top: 10px;
     padding: 5px;
     width: 100px
@@ -59,12 +64,22 @@ h2 {
     color: #856404;
     border-color: #856404;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.5rem;
     margin-top: 10px;
     padding: 5px;
     width: 100px
   }
   
+  .all-input {
+    background-color: #b2a4f8;
+    color: #2f14b9;
+    border-color: #2f14b9;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
   
   table {
     width: 80%;

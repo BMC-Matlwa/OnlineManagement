@@ -58,3 +58,16 @@ button {
 button:hover {
   background-color: pink;
 }
+.back-to-login p {
+  margin-top: 20px;
+  color: #fff;
+}
+
+.back-to-login a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.back-to-login a:hover {
+  text-decoration: underline;
+}

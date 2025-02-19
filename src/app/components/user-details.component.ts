@@ -17,6 +17,7 @@ export class UserDetailsComponent implements OnInit {
   user: any = {};
   editMode = false;
   userName: string = '';
+  isAdmin: boolean = false;
 
   constructor(private dataService: DataService, private router:Router) {}
 
@@ -32,6 +33,7 @@ export class UserDetailsComponent implements OnInit {
         (response) => {
           this.user = response; // Set full user details
           this.userName = response.name || response.email; // Display userName if available
+          this.isAdmin = response.role === 'admin';
         },
         (error) => {
           console.error('Error fetching user info:', error);

@@ -33,15 +33,24 @@
       </div>  
     </div>
       <br>
-      <div>
-      <!-- Role selection (Optional: Only allow role selection for admins) -->
-      <label for="role">Role:</label><br>
-      <select [(ngModel)]="user.role" name="role">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label>Role:</label>
+      
+        <label style="display: flex; align-items: center; gap: 5px;">
+          <input type="radio" [(ngModel)]="user.role" name="role" value="user" />
+          User
+        </label>
+      
+        <label style="display: flex; align-items: center; gap: 5px;">
+          <input type="radio" [(ngModel)]="user.role" name="role" value="admin" />
+          Admin
+        </label>
       </div>
+      
       <button type="submit">Register</button>
     </form>
+    <div class="back-to-login">
+      <p> <a [routerLink]="['']">Back to Login</a></p>
+    </div>
   </div>
   

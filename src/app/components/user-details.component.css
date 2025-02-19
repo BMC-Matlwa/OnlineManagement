@@ -51,3 +51,8 @@
     background-color: #ddd;
   }
   
+  .unauthorized {
+    color: red;
+    font-weight: bold;
+  }
+  

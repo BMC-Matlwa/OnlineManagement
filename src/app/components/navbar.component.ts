@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,8 @@ export class NavbarComponent implements OnInit {
   userName: string = ''; // Variable to store the user's name
   isAdmin: boolean = false;
   menuOpen = false;
+  isUser: boolean = false;
+  isInactive: boolean = false;
 
   constructor(private dataService: DataService) {}
 
@@ -29,6 +32,8 @@ export class NavbarComponent implements OnInit {
         (response) => {
           this.userName = response.name || response.email; // Set userName from the server response
           this.isAdmin = response.role === 'admin';
+          this.isUser = response.role === 'user';
+          this.isInactive = response.role === 'Inactive';
         },
         (error) => {
           console.error('Error fetching user info:', error);
@@ -58,5 +63,30 @@ export class NavbarComponent implements OnInit {
     this.menuOpen = !this.menuOpen;
   }
   
+  // Stop event propagation for clicks inside the dropdown
+  stopEvent(event: Event) {
+    event.stopPropagation();
+  }
   
+     // HostListener to listen for clicks outside the dropdown
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown') && !target.closest('.menu') && this.menuOpen) {
+      this.menuOpen = false; // Close the dropdown if clicked outside
+    }
+  }
+
+  userDetails(){
+    window.location.href = '/user-details';
+  }
+
+   // Close the menu when clicking outside of it
+   closeMenu(event: Event) {
+    if (!this.menuOpen) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown') && !target.closest('.menu')) {
+      this.menuOpen = false;
+    }
+  }
 }

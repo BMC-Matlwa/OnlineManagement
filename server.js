@@ -10,6 +10,7 @@ const sequelize = require("./src/app/models/db"); // Import Sequelize instance
 const User = require("./src/app/models/user"); 
 const router = express.Router();
 const app = express();
+const { sendWelcomeEmail } = require("./src/app/emailService.js"); //when a user registers, this is used to send the email.
 
 const JWT_SECRET = 'your-secret-key';
 
@@ -106,7 +107,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-//forgot password endpoint
+//forgot password endpoint -------------------------------------------------------
 
 app.post('/api/forgot-password', (req, res) => {
   const { email } = req.body;
@@ -147,45 +148,7 @@ app.post('/api/forgot-password', (req, res) => {
 
 
 
-// Endpoint to request password reset
-// router.post("/reset-password", async (req, res) => {
-//     const { email } = req.body;
-
-//     // Check if user exists
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//         return res.status(400).json({ message: "User not found" });
-//     }
-
-//     // Generate reset token (valid for 15 minutes)
-//     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "15m" });
-
-//     // Send reset email
-//     const transporter = nodemailer.createTransport({
-//         service: "gmail",
-//         auth: {
-//             user: "matlwamasego@gmail.com", // Replace with your email
-//             pass: "_Masego146"  // Replace with your email password
-//         }
-//     });
-
-//     const resetLink = `http://localhost:4200/reset-password?token=${token}`;
-//     const mailOptions = {
-//         from: "matlwamasego@gmail.com",
-//         to: user.email,
-//         subject: "Password Reset Request",
-//         html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 15 minutes.</p>`
-//     };
-
-//     try {
-//         await transporter.sendMail(mailOptions);
-//         res.json({ message: "Password reset email sent!" });
-//     } catch (error) {
-//         res.status(500).json({ message: "Error sending email", error });
-//     }
-// });
-
-// module.exports = router;
+//reset password send email code ------------------------------------------------------------
 router.post("/reset-password", async (req, res) => {
   const { email } = req.body;
 
@@ -229,7 +192,7 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-
+//reset password after receiving email api --------------------------------------------
 router.post("/reset-password/confirm", async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -267,7 +230,7 @@ router.post("/reset-password/confirm", async (req, res) => {
 
 
 
-// Endpoint to reset password
+// Endpoint to update password------------------------------------------------
 router.post("/update-password", async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -452,14 +415,14 @@ app.put('/api/users/:id', (req, res) => { //for user updating
 
 app.put('/api/user/:id', (req, res) => { //for admin updating
   const userId = req.params.id;
-  const { name, email, phone, address, gender, dob, password } = req.body;
+  const { name, email, phone, address, gender, dob, password, role } = req.body;
 
   const query = `
     UPDATE users
-    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, password = $8
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, password = $8, role = $9
     WHERE id = $7
   `;
-  const values = [name, email, phone, address, gender, dob, userId, password] ;
+  const values = [name, email, phone, address, gender, dob, userId, password, role] ;
 
   pool.query(query, values)
   .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
@@ -691,7 +654,7 @@ app.get('/api/products/name/:productName', async (req, res) => {
 
 //Products table end-------------------------------------------------------------------------------------------
 
-//register.component
+//register.component -----------------------------------------------------------
 app.use(bodyParser.json()); 
 
 const ADMIN_KEY = 'adminKey123';  // Replace with a secure key
@@ -723,6 +686,9 @@ app.post('/api/register', async (req, res) => {
 
     client.release();
 
+     // Send Welcome Email
+     await sendWelcomeEmail(email, name);
+
     res.status(201).json({
       message: 'User registered successfully',
       user: result.rows[0],
@@ -737,6 +703,13 @@ app.post('/api/register', async (req, res) => {
   try {
     const { name, email, password, role, key } = req.body;
     const client = await pool.connect();
+
+     // Check if the email already exists
+     const existingUser = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+     if (existingUser.rows.length > 0) {
+       return res.status(400).json({ error: "Email is already registered" });
+     }
 
     let assignedRole = 'user'; // Default role is 'user'
 
@@ -755,17 +728,20 @@ app.post('/api/register', async (req, res) => {
 
     client.release();
 
+     // Send Welcome Email
+     await sendWelcomeEmail(email, name);
+
     res.status(201).json({
       message: 'User registered successfully',
       user: result.rows[0],
     });
   } catch (error) {
-    console.error('Error inserting user:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error inserting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-
+//register component end---------------------------------------------------
 
 // Start Server
 app.listen(3000, () => console.log('Server running on http://localhost:3000'));

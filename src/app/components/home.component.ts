@@ -26,7 +26,7 @@ export class HomeComponent {
       const userId = parseInt(storedUserId, 10);
       this.dataService.getUserInfo(userId).subscribe(
         (response) => {
-            console.log('User Info:', response); 
+            // console.log('User Info:', response); //To show logged in body request.
           this.userRole = response.role;  // Assuming the response has a 'role' field
         },
         (error) => {

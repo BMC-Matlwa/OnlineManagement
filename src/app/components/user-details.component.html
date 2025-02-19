@@ -12,6 +12,16 @@
       <input *ngIf="editMode" [(ngModel)]="user.email" />
     </div>
     <div class="detail-item">
+        <label>Status:</label>
+        <span *ngIf="!editMode">{{ user.role }}</span>
+        <select *ngIf="editMode && isAdmin" [(ngModel)]="user.role"> <!--If user is Admin-->
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+            <option value="Inactive">Deactivate</option>
+        </select>
+        <span *ngIf="editMode && !isAdmin" class="unauthorized">Unauthorized to edit role</span> <!--If user is not Admin-->
+      </div>
+    <div class="detail-item">
       <label>Phone:</label>
       <span *ngIf="!editMode">{{ user.phone }}</span>
       <input *ngIf="editMode" [(ngModel)]="user.phone" />

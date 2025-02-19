@@ -118,4 +118,8 @@ export class DataService {
     return this.http.post('http://localhost:3000/update-password', { token, newPassword });
   }
   
+  registerUser(userData: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/register', userData);
+  }
+  
 }

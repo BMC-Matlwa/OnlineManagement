@@ -5,6 +5,7 @@
     padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
+    height: 8%;
   }
   
   .navbar-left a,
@@ -34,45 +35,101 @@
     justify-content: center;
     background-color: #333;
     color: white;
-    border: 1px solid #ccc;
-    border-radius: 2px;
     padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 200px;
+    width: 195px;
   }
   
   .menu-button:hover {
     background-color: #4CAF50;
+    border: 1px solid #ccc;
   }
+
+  
+.menu-btn{
+  background-color: #444;
+  color: white;
+  
+}
+.menu-btn:hover{
+  background-color: #4CAF50;
+  border: 1px solid #ccc;
+}
   
   .username {
     margin-left: 8px;
-    font-size: 14px;
+    font-size: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   
-  .dropdown {
-    position: absolute;
-    right: 0;
-    background-color: #333;
-    border: 1px solid #ccc;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    z-index: 1000;
-    min-width: 180px;
-  }
-  
-  .dropdown a {
-    display: block;
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-  }
-  
-  .dropdown a:hover {
-    background-color: #f1f1f1;
-  }
-  
+  /* Style for the menu */
+.navbar-left {
+  position: relative;
+}
+
+/* .menu {
+  position: relative;
+} */
+
+.dropdown {
+  margin-top: 94px; /*where the dropdown starts*/
+  position: fixed; /* Ensures the dropdown stays in place when scrolling */
+  top: 0;
+  left: 0;
+  width: 300px; /* Set the width of the dropdown */
+  height: 100%; /* Makes the dropdown fill the full height of the page */
+  background-color: #333; /* Background color for the menu */
+  color: white; /* Text color */
+  z-index: 1000; /* Ensure the dropdown appears on top of other elements */
+  display: flex;
+  flex-direction: column; /* Align the links vertically */
+  padding: 20px;
+  box-sizing: border-box; /* Ensure padding doesn’t affect width */
+}
+
+.dropdown a {
+  padding: 20px;
+  color: white;
+  font-size: 16px;
+}
+
+.dropdown button{
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+.dropdown a:hover,
+.dropdown button:hover {
+  background-color: #444; /* Hover effect */
+}
+
+.dropdown svg {
+  margin-right: 8px; /* Spacing between icon and text */
+}
+
+
+.close-btn {
+  position: absolute; /* Absolute positioning inside the dropdown */
+  top: 20px; /* Adjust the top margin for spacing */
+  right: 20px; /* Position the button on the right */
+  background-color: #444;
+  color: white;
+  padding: 5px; /* Adjust padding to match button size */
+  border: none;
+  cursor: pointer;
+  font-size: 16px; /* Ensure text/icon inside the button is the same size */
+  width: 40px; /* Set a fixed width to match the toggle button */
+  height: 40px; /* Set a fixed height to match the toggle button */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center the content inside the button */
+}
+
+
+.close-btn:hover {
+  background-color: #555;
+}

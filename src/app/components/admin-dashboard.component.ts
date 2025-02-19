@@ -47,6 +47,7 @@ export class AdminDashboardComponent implements AfterViewInit {
   sumApprovedOrders: number = 0;
   sumDeclinedOrders: number = 0;
   sumPendingOrders: number = 0;
+  sumAllOrders: number = 0;
   
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
@@ -81,6 +82,7 @@ export class AdminDashboardComponent implements AfterViewInit {
   const storedSum = localStorage.getItem('approvedOrdersSum');
   const declinedSum = localStorage.getItem('declinedOrdersSum');
   const pendingSum = localStorage.getItem('pendingOrdersSum');
+  const allSum = localStorage.getItem('allOrdersSum');
   if (storedSum) {
     this.sumApprovedOrders = parseInt(storedSum, 10);
   } else {
@@ -89,6 +91,7 @@ export class AdminDashboardComponent implements AfterViewInit {
   this.sumApprovedOrders = storedSum ? parseInt(storedSum, 10) : 0;
   this.sumDeclinedOrders = declinedSum ? parseInt(declinedSum, 10) : 0;
   this.sumPendingOrders = pendingSum ? parseInt(pendingSum, 10) : 0;
+  this.sumAllOrders = allSum ? parseInt(allSum, 10) : 0;
 
   if (!storedSum || !declinedSum || !pendingSum) {
     this.calculateOrderSums();
@@ -108,10 +111,13 @@ calculateOrderSums(): void {
     .filter(order => order.status === 'Pending')
     .reduce((sum, order) => sum + (order.quantity || 0), 0);
 
+  this.sumAllOrders = this.orders
+    .reduce((sum, order) => sum + (order.quantity || 0), 0); 
   // Store the sums in localStorage for persistence
   localStorage.setItem('approvedOrdersSum', this.sumApprovedOrders.toString());
   localStorage.setItem('declinedOrdersSum', this.sumDeclinedOrders.toString());
   localStorage.setItem('pendingOrdersSum', this.sumPendingOrders.toString());
+  localStorage.setItem('allOrdersSum', this.sumAllOrders.toString());
 }
 
 calculateSum(status: string): number {
@@ -230,44 +236,44 @@ calculateSum(status: string): number {
   }
 
   downloadPDF() {
-    if (!this.orders || this.orders.length === 0) {
-      console.warn("No data to export.");
-      return;
-    }
-  
-    // Create a new PDF document
     const doc = new jsPDF();
   
-     // Get the current date
-  const currentDate = new Date().toLocaleDateString();
-
-    // Add title
+    // Title
     doc.setFontSize(18);
-    doc.text('Orders Report', 14, 15);
-    
-    // Add generated date below the title
-doc.setFontSize(12);
-doc.text(`Generated on: ${currentDate}`, 14, 22);
+    doc.text('Order Summary Report', 14, 15);
   
-    // Define table headers
-    const headers = [["Product Name", "Quantity", "Status", "Order Date", "Ordered By"]];
+    // Add Date
+    const currentDate = new Date().toLocaleDateString();
+    doc.setFontSize(12);
+    doc.text(`Report Date: ${currentDate}`, 14, 25);
   
-    // Map order data into table format
-    const data = this.orders.map(order => [
+
+
+  // Convert table to PDF format
+  autoTable(doc, {
+    head: [['Product Name', 'Quantity', 'Status', 'Order Date', 'Ordered By']],
+    body: this.orders.map(order => [
       order.product_name,
       order.quantity,
       order.status,
       this.formatOrderDate(order.order_date),
       order.name
-    ]);
+    ]),
+    startY: 35, // Ensure the table starts after the order summary
+  });
   
-    // Generate the table
-    autoTable(doc, {
-      startY: 20,
-      head: headers,
-      body: data,
-    });
+  const finalY = (doc as any).lastAutoTable.finalY || 35;
   
+     // Order Summary
+     const summaryY = finalY + 15;
+     doc.setFontSize(14);
+     doc.text('Order Summary:', 14, summaryY);
+     
+     doc.setFontSize(12);
+     doc.text(`Approved Orders: ${this.sumApprovedOrders}`, 14, summaryY + 10);
+     doc.text(`Declined Orders: ${this.sumDeclinedOrders}`, 14, summaryY + 20);
+     doc.text(`Pending Orders: ${this.sumPendingOrders}`, 14, summaryY + 30);
+     doc.text(`Total Orders: ${this.sumAllOrders}`, 14, summaryY + 40);
     // Save the PDF
     doc.save(`orders_${currentDate.replace(/\//g, '-')}.pdf`);
   }
