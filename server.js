@@ -230,7 +230,7 @@ router.post("/reset-password/confirm", async (req, res) => {
 
 
 
-// Endpoint to update password------------------------------------------------
+// update password------------------------------------------------
 router.post("/update-password", async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -294,22 +294,22 @@ app.post('/api/data', async (req, res) => {
 
 app.post('/api/data', async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
+    const { name, description, price, stock, image_url } = req.body;
 
     // Insert new order into the database
     const insertQuery = `
-      INSERT INTO products (name, description, price, stock)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO products (name, description, price, stock, image_url)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`;
 
     const client = await pool.connect();
-    const result = await client.query(insertQuery, [name, description, price, stock]);
+    const result = await client.query(insertQuery, [name, description, price, stock, image_url]);
 
     client.release();
 
     // Send the added order back as the response
     res.status(201).json({
-      message: 'Order added successfully',
+      message: 'Product added successfully',
       order: result.rows[0],
     });
   } catch (error) {

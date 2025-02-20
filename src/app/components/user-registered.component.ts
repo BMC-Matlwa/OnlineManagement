@@ -20,7 +20,7 @@ export class UserRegisteredComponent {
   allUsers: any[] = [];
   users: any[] = [];
   currentPage = 1;
-  itemsPerPage = 7; // Change this to the number of items per page
+  itemsPerPage = 7; 
   totalItems: number = this.users.length;
   searchQuery: string = '';
 
@@ -67,7 +67,7 @@ export class UserRegisteredComponent {
     this.updatePagination();
     console.log("Filtered Users:", this.users); // Debugging
   }
-  
+
   updatePagination(): void {
     this.totalItems = this.users.length;
   }

@@ -29,12 +29,12 @@
           <td>{{ formatOrderDate(order.order_date) }}</td>
           <td>{{ order.name }}</td>
           <td>
-            <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" style="background-color: #4CAF50; color: white;">Approve</button>&nbsp;&nbsp;
-            <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" style="background-color: red; color: white;">Decline</button>
+            <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" class="approveBTN">Approve</button>
+            <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" class="deleteBTN">Decline</button>
           </td>
         </tr>
-      
     </table>
+    <br>
     <div class="order-sum-container">
     <div class="approved-orders-div">
         <label for="approvedSum">Approved Orders:</label>
@@ -58,27 +58,68 @@
   <!-- View and Add Products Tab -->
   <mat-tab label="Products">
     <h2>View and Add Products</h2>
+    <!-- Search Bar -->
+<div class="search-container">
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
+    <button (click)="searchProducts()">Search</button>
+  </div>
     <table border="1">
         <tr>
           <!-- <th>ID</th> -->
           <th>Product Name</th>
+          <th>Description</th>
+          <th>Preview</th>
           <th>Quantity</th>
           <th>Price</th>
-          <th>Description</th>
           <th>Actions</th>
         </tr>
-        <tr *ngFor="let item of data">
-          <!-- <td>{{ item.id }}</td> -->
+        <tr *ngFor="let item of paginatedProducts">
+            <ng-container *ngIf="!item.editMode; else editForm">
           <td>{{ item.name }}</td>
-          <td>{{ item.stock }}</td>
-          <td>{{ item.price }}</td>
           <td>{{ item.description }}</td>
           <td>
-            <button (click)="editData(item)" style="background-color: orange; color: white;">Edit</button>
-            <button (click)="deleteData(item.id)" style="background-color: red; color: white;">Delete</button>
+            <img 
+            [src]="item.image_url ? item.image_url : 'assets/img/loading.jpg'" 
+            alt="Product Image" 
+            class="product-image"
+            (click)="openImage(item.image_url)"
+          />
           </td>
+          <td>{{ item.stock }}</td>
+          <td>{{ item.price }}</td>
+          <td>
+            <button (click)="toggleEdit(item)" class="editBTN">Edit</button>
+            <button (click)="deleteData(item.id)" class="deleteBTN">Delete</button>
+          </td>
+          <!-- <td>
+            <button (click)="editData(item)" class= "editBTN" >Edit</button>
+            
+          </td> -->
+        </ng-container>
+        <ng-template #editForm>
+            <td><input [(ngModel)]="item.name" /></td>
+            <td><input [(ngModel)]="item.description" /></td>
+            <td><input [(ngModel)]="item.image_url" /></td>
+            <td><input [(ngModel)]="item.stock" /></td>
+            <td><input [(ngModel)]="item.price" /></td>
+            <td>
+              <button (click)="saveUser(item)">Save</button>
+              <button (click)="cancelEdit(item)">Cancel</button>
+            </td>
+          </ng-template>
         </tr>
     </table>
+    <div *ngIf="selectedImage" class="image-modal" (click)="closeImage()">
+        <div class="image-modal-content">
+          <img [src]="selectedImage" alt="Product Image" />
+        </div>
+      </div>
+    <!-- Pagination Controls -->
+   <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
 
     <!-- Add New Product Form -->
     <h2>Add New Product</h2>
@@ -95,12 +136,17 @@
       <label for="description">Description:</label>
       <input [(ngModel)]="newItem.description" name="description" required />
 
+      <label for="image">Image</label>
+      <input type="text" [(ngModel)]="newItem.image_url" placeholder="*Enter image URL" name="image">
+
+
       <button type="submit" style="background-color: #4CAF50; color: white;">Add Product</button>
     </form>
   </mat-tab>
 
-  <!-- Edit Order Tab -->
-  <mat-tab *ngIf="editingItem" label="Edit Order">
+  
+  <!-- Edit Order Tab
+  <mat-tab *ngIf="editingItem" label="EditOrder">
     <h2>Edit Order</h2>
     <form (ngSubmit)="updateData()">
       <label for="name">Product Name:</label>
@@ -114,5 +160,5 @@
 
       <button type="submit" style="background-color: orange; color: white;">Update Order</button>
     </form>
-  </mat-tab>
+  </mat-tab> -->
 </mat-tab-group>

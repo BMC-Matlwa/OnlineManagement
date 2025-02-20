@@ -25,12 +25,18 @@ import { MatTabGroup } from '@angular/material/tabs';
     
 })
 export class DashboardComponent implements AfterViewInit {
+  allProducts: any[] = [];
   products: any[] = [];
   userId!: number; // Definite assignment assertion
   userRole: string = '';
   orders: any[] = []; //to view user orders
 @ViewChild('tabGroup') tabGroup!: MatTabGroup; //to record the tabs
   selectedTabIndex = 0;
+
+  currentPage = 1;
+  itemsPerPage = 7; 
+  totalItems: number = this.products.length;
+  searchQuery: string = '';
 
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
@@ -81,7 +87,12 @@ export class DashboardComponent implements AfterViewInit {
   fetchProducts(): void {
     this.dataService.getProducts().subscribe(
       (response) => {
-        this.products = response;
+        this.allProducts = response;
+        this.products = [...this.allProducts]
+
+        this.totalItems = this.products.length;
+        this.updatePagination();
+        console.log("Fetched Users:", this.allProducts);
       },
       (error) => {
         console.error('Error fetching products:', error);
@@ -129,6 +140,54 @@ export class DashboardComponent implements AfterViewInit {
       }
     );
   }
+  updatePagination(): void {
+    this.totalItems = this.products.length;
+  }
 
-  
+   // Get the current page of users
+  get paginatedProducts() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = this.currentPage * this.itemsPerPage;
+    console.log('Displaying users from index:', start, 'to', end);
+    return this.products.slice(start, end);
+  }
+
+ // Go to the next page
+ nextPage() {
+  console.log('Next page clicked', this.currentPage, this.totalPages); // Debugging log
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    console.log('New currentPage after nextPage:', this.currentPage); // Debugging log
+  }
+}
+
+previousPage() {
+  console.log('Previous page clicked', this.currentPage); // Debugging log
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    console.log('New currentPage after previousPage:', this.currentPage); // Debugging log
+  }
+}
+
+get totalPages() {
+  return Math.ceil(this.totalItems / this.itemsPerPage);
+}
+
+searchProducts(): void {
+  console.log("Search Query:", this.searchQuery); // Debugging
+  if (this.searchQuery.trim() === '') {
+    this.products = [...this.allProducts]; // Reset if search is empty
+  } else {
+    const query = this.searchQuery.toLowerCase();
+    this.products = this.allProducts.filter(product =>
+      product.name?.toLowerCase().includes(query) ||
+      product.description?.toLowerCase().includes(query)
+    );
+  }
+  this.currentPage = 1; // Reset pagination
+  this.totalItems = this.products.length; // Update total items count
+  this.updatePagination();
+  console.log("Filtered Users:", this.products); // Debugging
+}
+
 }

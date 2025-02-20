@@ -34,7 +34,7 @@
           <td>{{ formatOrderDate(user.dob) }}</td>
           <td>********</td> <!-- <td>{{ user.password }}</td> -->
           <td>
-            <button (click)="toggleEdit(user)">Edit</button>
+            <button (click)="toggleEdit(user)" class="editBTN">Edit</button>
           </td>
         </ng-container>
         <ng-template #editForm>
@@ -75,4 +75,3 @@
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
   </div>
   </div>
-  

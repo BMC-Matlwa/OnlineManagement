@@ -30,14 +30,16 @@ import autoTable from 'jspdf-autotable';
 })
 export class AdminDashboardComponent implements AfterViewInit {
 
+  allData: any[] = [];
   orders: any[] = [];
   data: any[] = []; // Array to hold fetched data
-  newItem: any = {
+  newItem: any = { // For new item data binding
     name: '',
     stock: null,
     price: null,
-    description: null
-  }; // For new item data binding
+    description: null,
+    image: null
+  }; 
   editingItem: any = null; // For editing item
   userId!: number; // Definite assignment assertion
   userRole: string = '';
@@ -48,6 +50,11 @@ export class AdminDashboardComponent implements AfterViewInit {
   sumDeclinedOrders: number = 0;
   sumPendingOrders: number = 0;
   sumAllOrders: number = 0;
+  currentPage = 1;
+  itemsPerPage = 5; 
+  totalItems: number = this.products.length;
+  searchQuery: string = '';
+  selectedImage: string | null = null;
   
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
@@ -285,20 +292,76 @@ calculateSum(status: string): number {
   fetchData(): void {
     this.dataService.getData().subscribe(
       (response) => {
-        this.data = response;
+        this.allData = response;
+        this.data = [...this.allData]
+
+        this.totalItems = this.data.length;
+        this.updatePagination();
+        console.log("Fetched Products:", this.allData);
       },
       (error) => {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching products:', error);
       }
     );
   }
+
+  updatePagination(): void {
+    this.totalItems = this.data.length;
+  }
+
+   // Get the current page of users
+  get paginatedProducts() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = this.currentPage * this.itemsPerPage;
+    console.log('Displaying users from index:', start, 'to', end);
+    return this.data.slice(start, end);
+  }
+
+  // Go to the next page
+ nextPage() {
+  console.log('Next page clicked', this.currentPage, this.totalPages); // Debugging log
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    console.log('New currentPage after nextPage:', this.currentPage); // Debugging log
+  }
+}
+
+previousPage() {
+  console.log('Previous page clicked', this.currentPage); // Debugging log
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    console.log('New currentPage after previousPage:', this.currentPage); // Debugging log
+  }
+}
+
+get totalPages() {
+  return Math.ceil(this.totalItems / this.itemsPerPage);
+}
+
+searchProducts(): void {
+  console.log("Search Query:", this.searchQuery); // Debugging
+  if (this.searchQuery.trim() === '') {
+    this.data = [...this.allData]; // Reset if search is empty
+  } else {
+    const query = this.searchQuery.toLowerCase();
+    this.data = this.allData.filter(product =>
+      product.name?.toLowerCase().includes(query) ||
+      product.description?.toLowerCase().includes(query)
+    );
+  }
+  this.currentPage = 1; // Reset pagination
+  this.totalItems = this.data.length; // Update total items count
+  this.updatePagination();
+  console.log("Filtered Users:", this.data); // Debugging
+}
 
   addProductData() {
     const orderData = {
       name: this.newItem.name,
       stock: this.newItem.stock,
       price: this.newItem.price,
-      description: this.newItem.description
+      description: this.newItem.description,
+      image: this.newItem.image_url
     };
 
     this.dataService.addProduct(orderData).pipe(
@@ -316,9 +379,27 @@ calculateSum(status: string): number {
     );
   }
 
-
+  toggleEdit(user: any): void {
+    user.editMode = true;
+  }
   editData(item: any): void {
     this.editingItem = { ...item }; // Create a copy of the item to edit
+  }
+  
+  cancelEdit(user: any): void {
+    user.editMode = false;
+  }
+
+  saveUser(user: any): void {
+    this.dataService.updateUserP(user.id, user).subscribe(
+      () => {
+        alert('User updated successfully!');
+        user.editMode = false;
+      },
+      (error) => {
+        console.error('Error updating user:', error);
+      }
+    );
   }
 
   updateData(): void {
@@ -337,7 +418,6 @@ calculateSum(status: string): number {
       );
     }
   }
-
   deleteData(id: number): void {
     this.dataService.deleteData(id).subscribe(
       (response) => {
@@ -348,5 +428,16 @@ calculateSum(status: string): number {
       }
     );
   }
+
+  openImage(imageUrl: string): void {
+    this.selectedImage = imageUrl;
+  }
   
+  closeImage(): void {
+    this.selectedImage = null;
+  }
+  
+  goToEdit(tab: string): void {
+    this.router.navigate(['/admin'], { queryParams: { tab } });
+  }
 }

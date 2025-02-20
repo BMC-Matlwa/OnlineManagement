@@ -26,6 +26,11 @@
 
   <mat-tab label="Products">
 <h2>Available Products</h2>
+<!-- Search Bar -->
+<div class="search-container">
+  <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
+  <button (click)="searchProducts()">Search</button>
+</div>
 <table>
   <tr>
     <th>Product Name</th>
@@ -35,11 +40,15 @@
     <th>Order Quantity</th>
     <th>Action</th>
   </tr>
-  <tr *ngFor="let product of products">
+  <tr *ngFor="let product of paginatedProducts">
     <td>{{ product.name }}</td>
     <td>{{ product.description }}</td>
     <td>
-      <img [src]="product.imageUrl ? product.imageUrl : 'assets/img/loading.jpg'" alt="Order Image" class="order-image" />
+      <img 
+      [src]="product.image_url ? product.image_url : 'assets/img/loading.jpg'" 
+      alt="Product Image" 
+      class="product-image"
+    />
     </td>
     
     
@@ -52,5 +61,11 @@
     </td>
   </tr>
 </table>
+   <!-- Pagination Controls -->
+   <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
 </mat-tab>
 </mat-tab-group>

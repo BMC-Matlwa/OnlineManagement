@@ -28,7 +28,7 @@ th {
 
 button {
   padding: 10px 20px;
-  background-color: #007BFF;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -36,7 +36,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #28f32e;
 }
 
 form {
@@ -113,4 +113,44 @@ p .mat-tab-label-active {
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #ddd;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  margin: 0 10px;
+  cursor: pointer;
+
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  align-self: center;
+}
+
+.search-container {
+  margin: 20px auto;
+  max-width: 800px;
+  width: 80%
+}
+.search-container input{
+  width: 83%;
+  
+  max-width: 800px;
+}
+
+.product-image {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  object-fit: cover;
 }
