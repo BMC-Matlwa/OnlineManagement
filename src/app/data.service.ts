@@ -140,16 +140,26 @@ export class DataService {
   }
 
   // Checkout: Move items from cart to orders
-  checkoutCart(): Observable<any> {
-    return this.http.post<any>(`http://localhost:3000/api/checkout`, {});
+  checkoutCart(userId: number): Observable<any> {
+    return this.http.post<any>(`http://localhost:3000/api/checkout/${userId}`, {user_id: userId});
   }
   
-  getUserCart(userId: number) {
+  getUserCart() {
+    return this.http.get<any[]>(`http://localhost:3000/api/cart/`);
+  }
+
+  getUserCartCheckout(userId: number) {
     return this.http.get<any[]>(`http://localhost:3000/api/cart/${userId}`);
   }
 
-
-
+  updateCartQuantity(cartId: number, quantity: number): Observable<any> {
+    return this.http.put<any>(`http://localhost:3000/api/cart/${cartId}`, { quantity });
+  }
+  
+  removeCartItem(cartId: number): Observable<any> {
+    return this.http.delete<any>(`http://localhost:3000/api/cart/${cartId}`);
+  }
+  
 
 
 

@@ -49,10 +49,12 @@
 
   <div class="cart-actions">
     <p><strong>Total Items: {{ getTotalQuantity() }}</strong></p>
-    <p><strong>Total Amount: R{{ getTotalAmount() }}</strong></p>
-    <button (click)="checkoutCart()" class="checkout-btn">Purchase</button>
+    <p><strong>Total Amount: {{ getTotalAmount() | currency:'R' }}</strong></p>
+    <button (click)="navigateToDashboard()" class="checkout-btn">Catalogue</button>
+    <button (click)="checkoutCart(userId)" class="checkout-btn">Purchase</button>
   </div>
 </div>
+
 
 <!-- Message when cart is empty -->
 <div *ngIf="cartEmpty" class="empty-cart-container">

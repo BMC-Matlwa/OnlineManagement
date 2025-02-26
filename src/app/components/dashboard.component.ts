@@ -11,6 +11,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute } from '@angular/router';
 import { MatTabGroup } from '@angular/material/tabs';
+import { MatDialog } from '@angular/material/dialog';
+
 
 
 
@@ -32,13 +34,20 @@ export class DashboardComponent implements AfterViewInit {
   orders: any[] = []; //to view user orders
 @ViewChild('tabGroup') tabGroup!: MatTabGroup; //to record the tabs
   selectedTabIndex = 0;
-
   currentPage = 1;
   itemsPerPage = 7; 
   totalItems: number = this.products.length;
   searchQuery: string = '';
+  selectedProduct: any = null;
+  product: any;
+  images: string[] = [];
+  currentSlide: number = 0;
+  image_url?: string;
+  image2?: string;
+  image3?: string;
+  showModal: boolean = false;
 
-  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private dialog: MatDialog) {}
 
   ngAfterViewInit(): void {
     this.fetchProducts();
@@ -56,8 +65,10 @@ export class DashboardComponent implements AfterViewInit {
         }
       });
     });
-  }
 
+    
+  }
+  
   fetchOrders(): void {
     const userId = this.getLoggedInUserId(); 
     if (userId) {
@@ -100,6 +111,7 @@ export class DashboardComponent implements AfterViewInit {
     );
   }
 
+
   
   placeOrder(product: any): void {
     const quantity = product.orderQuantity;
@@ -119,8 +131,7 @@ export class DashboardComponent implements AfterViewInit {
       (response) => {
         console.log('Order placed:', response);
         alert('Order placed successfully.');
-
-        this.refreshProductList(); //to refresh the page after adding.
+        location.reload(); //reload the whole page
       },
       (error) => {
         console.error('Error placing order:', error);
@@ -150,12 +161,7 @@ export class DashboardComponent implements AfterViewInit {
     this.dataService.addToCart(cartItem).subscribe(() => {
       alert(`${product.name} added to cart!`);
       console.log("user_Id is", userId);
-    });
-  }
-
-  checkout() {
-    this.dataService.checkoutCart().subscribe(response => {
-      console.log("Order placed successfully", response);
+      location.reload(); //reload the whole page;
     });
   }
   
@@ -221,4 +227,49 @@ searchProducts(): void {
   console.log("Filtered Users:", this.products); // Debugging
 }
 
+// viewProductDetails(product: any): void {
+//   this.dialog.open(ProductDetailsComponent, {
+//     width: '400px',
+//     data: product
+//   });
+// }
+
+// openModal(product: any) {
+//   this.selectedProduct = product;
+// }
+
+// openModal(product: any) {
+//   this.selectedProduct = { ...product };
+
+//   // Ensure orderQuantity exists to prevent errors
+//   if (!this.selectedProduct.orderQuantity) {
+//     this.selectedProduct.orderQuantity = 1;
+//   }
+// }
+
+openModal(product: any) {
+  this.selectedProduct = { 
+    ...product,
+    images: [product.image_url, product.image2, product.image3].filter(img => img) // Store images in array
+  };
+  this.currentSlide = 0; // Reset slideshow index
+}
+
+
+
+closeModal(event: Event) {
+  if (event.target === event.currentTarget) {
+    this.selectedProduct = null;
+  }
+}
+
+prevSlide(event: Event) {
+  event.stopPropagation(); // Prevent modal close on button click
+  this.currentSlide = (this.currentSlide === 0) ? this.selectedProduct.images.length - 1 : this.currentSlide - 1;
+}
+
+nextSlide(event: Event) {
+  event.stopPropagation();
+  this.currentSlide = (this.currentSlide + 1) % this.selectedProduct.images.length;
+}
 }

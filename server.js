@@ -568,7 +568,7 @@ app.get('/api/orders/user/:userId', async (req, res) => { //for viewing orders a
 app.get('/api/products', async (req, res) => {
   try {
     const client = await pool.connect();
-    const query = 'SELECT * FROM products';
+    const query = 'SELECT * FROM products order by name asc';
     const result = await client.query(query);
     client.release();
 
@@ -785,37 +785,34 @@ app.get('/api/cart/:userId', async (req, res) => {
 });
 
 app.put('/api/cart/:id', async (req, res) => {
-  const { cartId } = req.params;
+  const { id } = req.params;
   const { quantity } = req.body;
+
   try {
-      await pool.query(
-          "UPDATE cart SET quantity = $1 WHERE id = $2",
-          [quantity, cartId]
-      );
-      res.status(200).json({ message: "Cart updated" });
+    await pool.query("UPDATE cart SET quantity = $1 WHERE id = $2", [quantity, id]);
+    res.json({ message: "Cart item updated successfully" });
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 app.delete('/api/cart/:id', async (req, res) => {
-  const { cartId } = req.params;
+  const { id } = req.params;
+
   try {
-      await pool.query("DELETE FROM cart WHERE id = $1", [cartId]);
-      res.status(200).json({ message: "Item removed from cart" });
+    await pool.query("DELETE FROM cart WHERE id = $1", [id]);
+    res.json({ message: "Item removed from cart" });
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/checkout', async (req, res) => {
+app.post('/api/checkout/', async (req, res) => {
   const { user_id } = req.body;
   try {
       // Move cart items to orders table with status 'Processing'
       await pool.query(
-          "INSERT INTO orders (user_id, product_name, quantity, price, status) SELECT c.user_id, p.name, c.quantity, p.price, 'Processing' FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'"
-,
-          [user_id]
+          "INSERT INTO orders (user_id, product_name, quantity, price, status) SELECT c.user_id, p.name, c.quantity, p.price, 'Processing' FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'",[user_id]
       );
 
       // Remove checked-out items from cart
@@ -829,6 +826,62 @@ app.post('/api/checkout', async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 });
+
+app.post('/api/checkout/:id', async (req, res) => {
+  const { user_id } = req.body;
+  console.log("Received user_id:", user_id); // Debugging
+
+  try {
+      // Move cart items to orders table with status 'Processing'
+      const result = await pool.query(
+          "INSERT INTO orders (user_id, product_name, quantity, price, status) SELECT c.user_id, p.name, c.quantity, p.price, 'Processing' FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'",[user_id]
+      );
+      console.log("Insert result:", result); // Debugging
+
+      // Remove checked-out items from cart
+       const updateResult = await pool.query(
+          "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
+          [user_id]
+      );
+      console.log("Update result:", updateResult); // Debugging
+
+      res.status(200).json({ message: "Order placed successfully" });
+  } catch (error) {
+    console.error("Checkout Error:", error);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// app.post('/api/checkout/:id', async (req, res) => {
+//   const { id } = req.params; // Get user_id from URL
+//   try {
+//       console.log(`Processing checkout for user_id: ${id}`);
+
+//       // Move cart items to orders
+//       await pool.query(
+//           `INSERT INTO orders (user_id, product_name, quantity, price, status)
+//            SELECT c.user_id, p.name, c.quantity, p.price, 'Processing'
+//            FROM cart c 
+//            JOIN products p ON c.product_id = p.id 
+//            WHERE c.user_id = $1 AND c.status = 'Pending Checkout'`,
+//           [id]
+//       );
+
+//       // Update cart status
+//       const updateResult = await pool.query(
+//           "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout' RETURNING *;",
+//           [id]
+//       );
+
+//       console.log("Updated cart status:", updateResult.rowCount);
+
+//       res.status(200).json({ message: "Order placed successfully" });
+//   } catch (error) {
+//       console.error("Checkout error:", error);
+//       res.status(500).json({ error: error.message });
+//   }
+// });
+
 
 //Order-cart.component end----------------------------------------------------
 // Start Server

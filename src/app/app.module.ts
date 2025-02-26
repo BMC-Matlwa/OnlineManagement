@@ -52,7 +52,8 @@ import { ValidateEqualDirective } from './validate-equal.directive';
     FormsModule,
     HomeComponent,
     MatDialogModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatCardModule
     // ,
     // RouterModule  // FormsModule should be in imports
   ],

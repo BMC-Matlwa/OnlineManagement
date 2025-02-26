@@ -7,7 +7,7 @@
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchProducts()">Search</button>
 </div>
-<table class="products-table">
+<!-- <table class="products-table">
   <tr>
     <th>Product Name</th>
     <th>Description</th>
@@ -38,10 +38,63 @@
       <button (click)="addToCart(product)">Add to cart</button>
     </td>
   </tr>
-</table>
+</table> -->
+<!-- Product List -->
+<div class="product-gallery">
+  <div *ngFor="let product of products" class="product-card"> <!--(click)="openModal(product)-->
+    <img [src]="product.image_url" alt="Product Image" class="product-image">
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.price | currency:'R' }}</p>
+    <a href="javascript:void(0);" (click)="openModal(product)" class="info-link">Description</a> <br>
+    <!-- Quantity Input -->
+    <input [(ngModel)]="product.orderQuantity" type="number" min="1" 
+           [max]="product.stock" placeholder="Qty" class="quantity-input" />&nbsp;
+    <!-- Add to Cart Button -->
+    <button (click)="addToCart(product)" class="add-to-cart-btn">Add to Cart</button>
+  </div>
+</div>
+
+
+
+<!-- Product Modal -->
+<!-- <div class="modal" [ngClass]="{ 'show': selectedProduct }" (click)="closeModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close-btn" (click)="selectedProduct = null">&times;</span>
+    <h2>{{ selectedProduct?.name }}</h2>
+    <img [src]="selectedProduct?.image_url" alt="Product Image" class="modal-image">
+    <h3>SPECIFICATIONS</h3>
+    <p>{{ selectedProduct?.description }}</p>
+    <h3 class="modal-price">Price: {{ selectedProduct?.price | currency:'R' }}</h3>
+  </div>
+</div> -->
+<div class="modal" [ngClass]="{ 'show': selectedProduct }" (click)="closeModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close-btn" (click)="selectedProduct = null">&times;</span>
+
+    <h2>{{ selectedProduct?.name }}</h2>
+
+    <!-- Slideshow Container -->
+    <div class="slideshow-container">
+      <div *ngFor="let image of selectedProduct?.images; let i = index" [hidden]="i !== currentSlide">
+        <img [src]="image" alt="Product Image" class="modal-image">
+      </div>
+
+      <!-- Navigation buttons -->
+      <button class="prev" (click)="prevSlide($event)">&#10094;</button>
+      <button class="next" (click)="nextSlide($event)">&#10095;</button>
+    </div>
+
+    <h3>SPECIFICATIONS</h3>
+    <p>{{ selectedProduct?.description }}</p>
+    <h3 class="modal-price">Price: {{ selectedProduct?.price | currency:'R' }}</h3>
+  </div>
+</div>
+
+
+
    <!-- Pagination Controls -->
-   <div class="pagination">
+   <!-- <div class="pagination">
     <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
-  </div>
+  </div> -->

@@ -23,12 +23,15 @@ export class NavbarComponent implements OnInit {
   showCart = false;
   // items: any[] = [];
   userId!: number;
+  cart: any[] = [];
+  cartItems: any[] = [];
+  cartEmpty: boolean = false;
 
   constructor(private router: Router, private cartService: CartService, private dataService: DataService) {}
 
   ngOnInit(): void {
     this.getUserInfo();
-    this.fetchOrders(); // Load orders when the component initializes
+    this.loadCart();
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
   }
 
@@ -70,40 +73,6 @@ export class NavbarComponent implements OnInit {
   getLoggedInUserId(): string | null {
     return localStorage.getItem('userId');  
   }
-  
-  fetchOrders(): void {
-    const userId = this.getLoggedInUserId(); 
-    if (userId) {
-      this.dataService.getOrdersByUser(userId).subscribe(
-        (response) => {
-          this.orders = response;
-          console.log('Orders fetched for user:', this.orders);
-        },
-        (error) => {
-          console.error('Error fetching orders for user:', error);
-        }
-      );
-    } else {
-      console.error('User not logged in');
-    }
-  }
-
-  increaseQuantity(index: number): void {
-    this.orders[index].quantity++;
-  }
-  
-  decreaseQuantity(index: number): void {
-    if (this.orders[index].quantity > 1) {
-      this.orders[index].quantity--;
-    } else {
-      this.removeFromCart(index); // If quantity reaches 0, remove the item
-    }
-  }
-  
-  removeFromCart(index: number): void {
-    this.orders.splice(index, 1);
-  }
-  
 
   getUserInfo(): void {
     const storedUserId = localStorage.getItem('userId');
@@ -134,13 +103,6 @@ export class NavbarComponent implements OnInit {
     console.log('User logged out');
     this.menuOpen = false;
   }
-
-  // logout() {
-  //   console.log('User logged out');
-  //   this.menuOpen = false;
-  //   // Add actual logout logic, like clearing tokens or redirecting to login
-  // }
-
   
   
   // Stop event propagation for clicks inside the dropdown
@@ -165,8 +127,28 @@ export class NavbarComponent implements OnInit {
   //   return this.orders.reduce((total, order) => total + order.quantity, 0);
   // }
 
+  loadCart(): void {
+    const userId = Number(localStorage.getItem('userId')); // Convert string to number
+    if (userId) {
+      this.dataService.getUserCartCheckout(userId).subscribe(
+        (response) => {
+          this.cart = response;
+          this.cartEmpty = this.cart.length === 0; //marks empty if there is nothing
+          console.log('Orders fetched for user:', response);
+          console.log("Fetched Cart Data:", response);
+          this.cartItems = response;
+        },
+        (error) => {
+          console.error('Error fetching orders for user:', error);
+        }
+      );
+    } else {
+      console.error('User not logged in');
+    }
+  }
+
   getTotalQuantity(): number {
-    return this.orders.reduce((total, order) => total + order.quantity, 0);
+    return this.cart.reduce((total, item) => total + item.quantity, 0);
   }  
 
   viewCart(): void {

@@ -199,6 +199,7 @@ setSorting(column: string): void {
     this.dataService.updateOrderStatus(order.id, 'Approved').subscribe(
       (response) => {
         console.log('Order approved:', response);
+        location.reload(); //reload the whole page
         order.status = 'Approved';
         console.log(`Updated status to Approved for: ${order.product_name}`);
         this.calculateSumOfApprovedOrders();
@@ -219,6 +220,7 @@ setSorting(column: string): void {
     this.dataService.updateOrderStatus(order.id, 'Declined').subscribe(
       (response) => {
         console.log('Order declined:', response);
+        location.reload(); //reload the whole page
         order.status = 'Declined';
         this.calculateSumOfApprovedOrders();
 
@@ -406,6 +408,7 @@ searchProducts(): void {
       (response) => {
         console.log('Order added successfully:', response);
         alert('Order added successfully!');
+        location.reload(); //reload the whole page
         this.newItem = { name: '', stock: null, price: null }; // Reset form fields
       }
     );
@@ -427,6 +430,7 @@ searchProducts(): void {
       () => {
         alert('User updated successfully!');
         user.editMode = false;
+        location.reload(); //reload the whole page
       },
       (error) => {
         console.error('Error updating user:', error);

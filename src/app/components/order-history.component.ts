@@ -17,13 +17,15 @@ export class OrderHistoryComponent {
   products: any[] = [];
   userId!: number; // Definite assignment assertion
   userRole: string = '';
+  groupedOrders: any[] = [];
 
   constructor(private dataService: DataService, private router: Router) {}
   
 
   ngOnInit(): void {
     this.fetchOrders();
-  }
+    this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
+}
 
   fetchOrders(): void {
     const userId = this.getLoggedInUserId(); 
@@ -32,6 +34,7 @@ export class OrderHistoryComponent {
         (response) => {
           this.orders = response;
           console.log('Orders fetched for user:', this.orders);
+          this.groupedOrders = this.groupOrdersByDate(response);
         },
         (error) => {
           console.error('Error fetching orders for user:', error);
@@ -46,6 +49,8 @@ export class OrderHistoryComponent {
     const date = new Date(orderDate);
     return date.toLocaleString(); // You can customize the format here
   }
+
+  
 
   getLoggedInUserId(): string | null {
     return localStorage.getItem('userId');  
@@ -109,5 +114,20 @@ export class OrderHistoryComponent {
   
   getProcessingOrders() {
     return this.orders.filter(order => order.status === 'Processing');
+  }
+
+  groupOrdersByDate(orders: any[]): any {
+    return orders.reduce((acc, order) => {
+      const date = this.formatOrderByDate(order.order_date);
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(order);
+      return acc;
+    }, {});
+  }
+
+  formatOrderByDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString();
   }
 }

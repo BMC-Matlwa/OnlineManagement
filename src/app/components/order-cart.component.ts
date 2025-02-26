@@ -28,6 +28,7 @@ export class OrderCartComponent {
   ngOnInit(): void {
     // this.fetchOrders();
     this.loadCart();
+    this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
   }
 
 
@@ -43,7 +44,7 @@ export class OrderCartComponent {
   loadCart(): void {
     const userId = Number(localStorage.getItem('userId')); // Convert string to number
     if (userId) {
-      this.dataService.getUserCart(userId).subscribe(
+      this.dataService.getUserCartCheckout(userId).subscribe(
         (response) => {
           this.cart = response;
           this.cartEmpty = this.cart.length === 0; //marks empty if there is nothing
@@ -60,24 +61,39 @@ export class OrderCartComponent {
     }
   }
 
-  increaseQuantity(index: number): void {
-    this.cartItems[index].quantity++;
-    this.updateCartItem(this.cartItems[index]);
+  increaseQuantity(index: number) {
+    const item = this.cart[index];
+    item.quantity++;  // Update UI first
+  
+    this.dataService.updateCartQuantity(item.id, item.quantity).subscribe(() => {
+      console.log('Quantity increased in DB');
+      location.reload(); //reload the whole page
+    }, error => {
+      console.error('Error updating quantity', error);
+    });
   }
+  
 
   decreaseQuantity(index: number): void {
     if (this.cart[index].quantity > 1) {
       this.cart[index].quantity--;
       this.updateCartItem(this.cart[index]);
+      location.reload(); //reload the whole page
     }
   }
 
-  removeFromCart(index: number): void {
-    const itemId = this.cart[index].id;
-    this.dataService.removeFromCart(itemId).subscribe(() => {
-      this.cart.splice(index, 1);
+  removeFromCart(index: number) {
+    const item = this.cart[index];
+  
+    this.dataService.removeCartItem(item.id).subscribe(() => {
+      this.cart.splice(index, 1);  // Update UI after DB update
+      console.log('Item removed from cart in DB');
+      location.reload(); //reload the whole page
+    }, error => {
+      console.error('Error removing item', error);
     });
   }
+  
 
   updateCartItem(item: any): void {
     this.dataService.updateCartItem(item.id, item).subscribe();
@@ -92,10 +108,21 @@ export class OrderCartComponent {
   }
   
 
-  checkoutCart(): void {
-    this.dataService.checkoutCart().subscribe(() => {
-      this.cart = [];
-    });
+  checkoutCart(userId: number): void {
+    ;
+    this.dataService.checkoutCart(userId).subscribe(
+      (response) => {
+        console.log("Checkout successful:", response);
+        alert("Purchase successful!");
+      // this.cart = [];
+      this.loadCart(); // Refresh cart
+      location.reload(); //reload the whole page
+    },
+  (error) => {
+    console.error("Checkout failed:", error);
+    alert("Checkout failed. See console for details.");
+  }
+  );
   }
 
   getTotalQuantity(): number {
@@ -158,6 +185,7 @@ export class OrderCartComponent {
         alert('Order placed successfully.');
 
         this.refreshProductList(); //to refresh the page after adding.
+        location.reload(); //reload the whole page
       },
       (error) => {
         console.error('Error placing order:', error);
@@ -183,52 +211,18 @@ export class OrderCartComponent {
     return this.orders.filter(order => order.status === 'Processing');
   }
 
-  // Increase quantity
-  // increaseQuantity(index: number) {
-  //   const processingOrders = this.getProcessingOrders();
-  //   const order = processingOrders[index];
-  //   if (order) {
-  //     order.quantity++;
-  //   }
-  // }
-
-  // // Decrease quantity (removes item if quantity reaches 0)
-  // decreaseQuantity(index: number) {
-  //   const processingOrders = this.getProcessingOrders();
-  //   const order = processingOrders[index];
-  //   if (order && order.quantity > 1) {
-  //     order.quantity--;
-  //   } else {
-  //     this.removeFromCart(index);
-  //   }
-  // }
-
-  // // Remove item from cart
-  // removeFromCart(index: number) {
-  //   const processingOrders = this.getProcessingOrders();
-  //   const orderToRemove = processingOrders[index];
-
-  //   // Find actual index in `orders` array
-  //   const actualIndex = this.orders.findIndex(order => order === orderToRemove);
-  //   if (actualIndex !== -1) {
-  //     this.orders.splice(actualIndex, 1);
-  //   }
-  // }
-
-  // Calculate total quantity of items in the cart
-  // getTotalQuantity() {
-  //   return this.getProcessingOrders().reduce((total, order) => total + order.quantity, 0);
-  // }
-
   addToCart(productId: number) {
     this.dataService.addToCart(productId).subscribe(response => {
       console.log("Product added to cart", response);
+      location.reload(); //reload the whole page
     });
   }
 
   checkout() {
-    this.dataService.checkoutCart().subscribe(response => {
+    const userId = Number(localStorage.getItem('userId'));
+    this.dataService.checkoutCart(userId).subscribe(response => {
       console.log("Order placed successfully", response);
+      location.reload(); //reload the whole page
     });
   }  
   
