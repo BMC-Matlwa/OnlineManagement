@@ -97,7 +97,6 @@ h2 {
   
   th {
     background-color: #4CAF50;
-    font-weight: bold;
     color: #ddd;
   }
   
@@ -161,7 +160,7 @@ h2 {
   form label {
     display: block;
     margin-top: 10px;
-    font-weight: bold;
+    
   }
   
   form input {
@@ -181,14 +180,13 @@ h2 {
     cursor: pointer;
     background-color: #4CAF50;
     color: white;
-    font-weight: bold;
+    
   }
   
 
   /* Customize the tab labels */
   .mat-tab-label {
     font-size: 16px;
-    font-weight: bold;
     text-transform: capitalize;
     color: #4CAF50;
   }
@@ -297,6 +295,39 @@ h2 {
     width: 100%;
     height: auto;
     border-radius: 10px;
+  }
+  
+  .sort-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+  }
+  
+  .sort-buttons label {
+    margin-right: 10px;
+    font-size: 16px;
+  }
+  
+  .sort-buttons button {
+    background-color: #007bff; /* Primary blue */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .sort-buttons button:hover {
+    background-color: #0056b3; /* Darker blue */
+    transform: scale(1.05);
+  }
+  
+  .sort-buttons button:active {
+    background-color: #003f80;
+    transform: scale(0.98);
   }
   
   

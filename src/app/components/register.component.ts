@@ -21,12 +21,20 @@ export class RegisterComponent {
     password: '',
     role: 'user',
     key: ''
-  }
+  };
+  confirmPassword: string = ''; 
+  password: string = '';
+  message: string = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   registerUser() 
   {
+    if (this.password !== this.confirmPassword) {
+      this.message = "Passwords do not match";
+      return;
+    }
+  
     if (this.user.role === 'admin') 
       {
       const adminKey = prompt('Enter the admin key:');

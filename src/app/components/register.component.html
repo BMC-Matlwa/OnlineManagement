@@ -25,12 +25,32 @@
       <br>
       <div>
       <label for="password">Password:</label><br>
-      <input type="password" id="password"  [(ngModel)]="user.password" name="password" required  minlength="6"
-      #passwordInput="ngModel"
-      placeholder="Enter your password">
+      <input 
+        type="password" 
+        id="password"  
+        [(ngModel)]="user.password" 
+        name="password" required  
+        minlength="6"
+        #passwordInput="ngModel"
+        placeholder="Enter your password">
       <div *ngIf="passwordInput.invalid && passwordInput.touched">
         <small style="color: red;">Password must be at least 6 characters.</small>
       </div>  
+    </div>
+    <div>
+      <label for="confirmPassword">Confirm Password:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          #confirmPasswordModel="ngModel"
+          required
+          placeholder="Confirm new password"
+        />
+        <div *ngIf="confirmPasswordModel.invalid && confirmPasswordModel.touched" class="error-message">
+          Passwords do not match.
+        </div>
     </div>
       <br>
       <div style="display: flex; align-items: center; gap: 10px;">

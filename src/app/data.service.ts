@@ -105,10 +105,6 @@ export class DataService {
     return this.http.post(`http://localhost:3000/reset-password`, { email });
   }
 
-  // resetPassword(token: string, newPassword: string) {
-  //   return this.http.post('http://localhost:3000/reset-password/confirm', { token, newPassword });
-  // }
-
   resetPassword(payload: { token: string, newPassword: string }): Observable<any> {
     return this.http.post<any>(`http://localhost:3000/reset-password/confirm`, payload);
   }
@@ -122,4 +118,45 @@ export class DataService {
     return this.http.post('http://localhost:3000/api/register', userData);
   }
   
+  // Fetch cart items
+  getCart(): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:3000/api/cart/`);
+  }
+
+  // Add product to cart with status 'Pending Checkout'
+  addToCart(product: any): Observable<any> {
+    const cartItem = { ...product, status: 'Pending Checkout' };
+    return this.http.post<any>(`http://localhost:3000/api/cart`, cartItem);
+  }
+
+  // Update cart item quantity
+  updateCartItem(id: number, updatedItem: any): Observable<any> {
+    return this.http.put<any>(`http://localhost:3000/api/cart/${id}`, updatedItem);
+  }
+
+  // Remove item from cart
+  removeFromCart(id: number): Observable<any> {
+    return this.http.delete<any>(`http://localhost:3000/api/cart/${id}`);
+  }
+
+  // Checkout: Move items from cart to orders
+  checkoutCart(): Observable<any> {
+    return this.http.post<any>(`http://localhost:3000/api/checkout`, {});
+  }
+  
+  getUserCart(userId: number) {
+    return this.http.get<any[]>(`http://localhost:3000/api/cart/${userId}`);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+<div *ngIf="!cartEmpty" class="cart-container">
+  <h2>Your Cart</h2>
+
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Preview</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cart; let i = index">
+        <td>
+          <img 
+          [src]="item.image_url ? item.image_url : 'assets/img/loading.jpg'" 
+          alt="Product Image" 
+          class="product-image"
+          (click)="navigateToDashboard()"
+        />
+        </td>
+        <td>{{ item.name }}</td>
+        <td>
+          
+          <span>{{ item.quantity }}</span>
+          
+        </td>
+        <td>{{ item.price | currency:'R'}}</td>
+        <td>{{ getTotalForItem(item) | currency:'R'}}</td>
+        <td>
+         <button (click)="increaseQuantity(i)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+        </svg></button> &nbsp;
+         <button (click)="decreaseQuantity(i)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+          <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+        </svg></button> &nbsp;
+         <button (click)="removeFromCart(i)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+          </svg></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cart-actions">
+    <p><strong>Total Items: {{ getTotalQuantity() }}</strong></p>
+    <p><strong>Total Amount: R{{ getTotalAmount() }}</strong></p>
+    <button (click)="checkoutCart()" class="checkout-btn">Purchase</button>
+  </div>
+</div>
+
+<!-- Message when cart is empty -->
+<div *ngIf="cartEmpty" class="empty-cart-container">
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16">
+    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/>
+    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+  </svg><br><br>
+  Cart is empty! <br><br>
+<button (click)="navigateToDashboard()" class="Empty-cart">Go to shopping</button>
+</div>
+
+
+<!-- 
+  <h2>Your Orders</h2>
+<div *ngIf="getProcessingOrders().length > 0">
+<table>
+  <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Order Date</th>
+      </tr>
+    </thead>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.product_name }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+    <td>{{ formatOrderDate(order.order_date) }}</td>
+  </tr>
+</table>
+<button (click)="placeOrder(orders)">Purchase</button>
+</div>
+
+<p *ngIf="getProcessingOrders().length === 0" class="empty-cart">Your cart is empty.</p> -->

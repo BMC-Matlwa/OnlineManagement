@@ -13,7 +13,9 @@ async function sendWelcomeEmail(userEmail, userName) {
     from: "deviieydevendranath@gmail.com",
     to: userEmail,
     subject: "Welcome to Our Platform!",
-    text: `Welcome to Online Order ${userName},\n\nThank you for registering. We're excited to have you on board!\n\nBest,\nOnline Order Management System.`,
+    text: `Welcome to Online Order ${userName},
+    \n\nThank you for registering. We're excited to have you on board!\n Please use ${userEmail} to login to your account.
+    \n\nBest,\nOnline Order Management System.`,
   };
 
   try {

@@ -1,0 +1,20 @@
+<app-navbar></app-navbar> 
+
+<h2>Your Orders</h2>
+
+<table>
+  <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Order Date</th>
+      </tr>
+    </thead>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.product_name }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+    <td>{{ formatOrderDate(order.order_date) }}</td>
+  </tr>
+</table>

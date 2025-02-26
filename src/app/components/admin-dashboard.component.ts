@@ -55,6 +55,9 @@ export class AdminDashboardComponent implements AfterViewInit {
   totalItems: number = this.products.length;
   searchQuery: string = '';
   selectedImage: string | null = null;
+  sortedOrders: any[] = [];
+  sortColumn: string = ''; // Column being sorted
+  sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
   
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
@@ -115,7 +118,7 @@ calculateOrderSums(): void {
     .reduce((sum, order) => sum + (order.quantity || 0), 0);
 
   this.sumPendingOrders = this.orders
-    .filter(order => order.status === 'Pending')
+    .filter(order => order.status === 'Processing')
     .reduce((sum, order) => sum + (order.quantity || 0), 0);
 
   this.sumAllOrders = this.orders
@@ -143,6 +146,8 @@ calculateSum(status: string): number {
       (response) => {
         this.orders = response;
         console.log('Orders fetched:', this.orders);
+        this.sortedOrders = [...this.orders]; // Initialize sorted list
+        this.sortOrders(); // Apply default sor
         this.calculateOrderSums();
       },
       (error) => {
@@ -150,6 +155,33 @@ calculateSum(status: string): number {
       }
     );
   }
+
+// Sort function triggered by button clicks
+sortOrders(): void {
+  this.sortedOrders = [...this.orders].sort((a, b) => {
+    const valueA = a[this.sortColumn];
+    const valueB = b[this.sortColumn];
+
+    if (typeof valueA === 'string') {
+      return this.sortDirection === 'asc'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    } else {
+      return this.sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
+    }
+  });
+}
+
+// Set sorting column and toggle direction
+setSorting(column: string): void {
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+  this.sortOrders();
+}
 
   calculateSumOfApprovedOrders(): void {
     this.sumApprovedOrders = this.orders

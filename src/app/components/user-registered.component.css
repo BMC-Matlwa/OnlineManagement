@@ -70,13 +70,13 @@ table {
     align-self: center;
   }
 
+  
   .search-container {
     margin: 20px auto;
-    width: 89%
+    max-width: 832px;
+    width: 90%
   }
   .search-container input{
-    width: 84%;
+    width: 85%;
   }
-
-  
   

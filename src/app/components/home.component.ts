@@ -51,4 +51,12 @@ export class HomeComponent {
   goToDashboard(tab: string): void {
     this.router.navigate(['/dashboard'], { queryParams: { tab } });
   }
+
+  goToOrders(): void {
+    this.router.navigate(['/order-history'])
+  }
+
+  goToCart(): void {
+    this.router.navigate(['/View-cart'])
+  }
 }

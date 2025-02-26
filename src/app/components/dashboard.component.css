@@ -154,3 +154,6 @@ p .mat-tab-label-active {
   border-radius: 5px;
   object-fit: cover;
 }
+.product-image:hover {
+  transform: scale(1.1);
+}

@@ -743,5 +743,93 @@ app.post('/api/register', async (req, res) => {
 
 //register component end---------------------------------------------------
 
+//Order-cart.component start-------------------------------------------------
+app.post('/api/cart', async (req, res) => {
+  const { user_id, product_id, quantity } = req.body;
+  try {
+      const existingCartItem = await pool.query(
+          "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2 AND status = 'Pending Checkout'",
+          [user_id, product_id]
+      );
+
+      if (existingCartItem.rows.length > 0) {
+          // Update quantity if product already exists in the cart
+          await pool.query(
+              "UPDATE cart SET quantity = quantity + $1 WHERE user_id = $2 AND product_id = $3 AND status = 'Pending Checkout'",
+              [quantity, user_id, product_id]
+          );
+      } else {
+          // Insert new product into cart
+          await pool.query(
+              "INSERT INTO cart (user_id, product_id, quantity, status) VALUES ($1, $2, $3, 'Pending Checkout')",
+              [user_id, product_id, quantity]
+          );
+      }
+      res.status(200).json({ message: "Product added to cart" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+      const result = await pool.query(
+          "SELECT c.id, p.name, c.quantity, c.status, p.price, p.image_url FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'",
+          [userId]
+      );
+      res.json(result.rows);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/cart/:id', async (req, res) => {
+  const { cartId } = req.params;
+  const { quantity } = req.body;
+  try {
+      await pool.query(
+          "UPDATE cart SET quantity = $1 WHERE id = $2",
+          [quantity, cartId]
+      );
+      res.status(200).json({ message: "Cart updated" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/cart/:id', async (req, res) => {
+  const { cartId } = req.params;
+  try {
+      await pool.query("DELETE FROM cart WHERE id = $1", [cartId]);
+      res.status(200).json({ message: "Item removed from cart" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/checkout', async (req, res) => {
+  const { user_id } = req.body;
+  try {
+      // Move cart items to orders table with status 'Processing'
+      await pool.query(
+          "INSERT INTO orders (user_id, product_name, quantity, price, status) SELECT c.user_id, p.name, c.quantity, p.price, 'Processing' FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'"
+,
+          [user_id]
+      );
+
+      // Remove checked-out items from cart
+      await pool.query(
+          "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
+          [user_id]
+      );
+
+      res.status(200).json({ message: "Order placed successfully" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+//Order-cart.component end----------------------------------------------------
 // Start Server
 app.listen(3000, () => console.log('Server running on http://localhost:3000'));

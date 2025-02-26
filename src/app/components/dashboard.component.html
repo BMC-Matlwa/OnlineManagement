@@ -1,46 +1,23 @@
 <!-- dashboard.component.html -->
 <app-navbar></app-navbar> 
-<h1>User Dashboard</h1>
-<mat-tab-group #tabGroup>
-  
-<mat-tab label="Orders">
-<h2>Your Orders</h2>
 
-<table>
-  <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Status</th>
-        <th>Order Date</th>
-      </tr>
-    </thead>
-  <tr *ngFor="let order of orders">
-    <td>{{ order.product_name }}</td>
-    <td>{{ order.quantity }}</td>
-    <td>{{ order.status }}</td>
-    <td>{{ formatOrderDate(order.order_date) }}</td>
-  </tr>
-</table>
-</mat-tab>
-
-  <mat-tab label="Products">
 <h2>Available Products</h2>
 <!-- Search Bar -->
 <div class="search-container">
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchProducts()">Search</button>
 </div>
-<table>
+<table class="products-table">
   <tr>
     <th>Product Name</th>
     <th>Description</th>
     <th>Preview</th>
+    <th>Price</th>
     <th>Available Stock</th>
     <th>Order Quantity</th>
     <th>Action</th>
   </tr>
-  <tr *ngFor="let product of paginatedProducts">
+  <tr *ngFor="let product of products">
     <td>{{ product.name }}</td>
     <td>{{ product.description }}</td>
     <td>
@@ -52,12 +29,13 @@
     </td>
     
     
+    <td>{{ product.price }}</td>
     <td>{{ product.stock }}</td>
     <td>
       <input [(ngModel)]="product.orderQuantity" type="number" min="1" [max]="product.stock" placeholder="Enter quantity" />
     </td>
     <td>
-      <button (click)="placeOrder(product)">Purchase</button>
+      <button (click)="addToCart(product)">Add to cart</button>
     </td>
   </tr>
 </table>
@@ -67,5 +45,3 @@
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
   </div>
-</mat-tab>
-</mat-tab-group>

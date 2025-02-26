@@ -128,6 +128,37 @@ export class DashboardComponent implements AfterViewInit {
       }
     );
   }
+
+  addToCart(product: any): void {
+    const userId = this.getLoggedInUserId();
+    const quantity = product.orderQuantity;
+
+    if (!quantity || isNaN(+quantity) || +quantity <= 0) { //if quantity is null or not a number or less/= than 0.
+      alert('Invalid quantity.');
+      return;
+    }
+
+    const cartItem = {
+      user_id: userId,
+      product_id: product.id,
+      // product_name: product.name,
+      // price: product.price,
+      quantity: +quantity
+      // status: 'Pending Checkout',
+    };
+
+    this.dataService.addToCart(cartItem).subscribe(() => {
+      alert(`${product.name} added to cart!`);
+      console.log("user_Id is", userId);
+    });
+  }
+
+  checkout() {
+    this.dataService.checkoutCart().subscribe(response => {
+      console.log("Order placed successfully", response);
+    });
+  }
+  
   
   refreshProductList(): void {
     // Call your data service or API to get the updated list of products
