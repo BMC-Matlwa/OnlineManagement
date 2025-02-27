@@ -1,12 +1,22 @@
-<!-- dashboard.component.html -->
 <app-navbar></app-navbar> 
 
+<div class="products-container">
 <h2>Available Products</h2>
 <!-- Search Bar -->
+<div *ngIf="showToast" class="toast">
+  <div class="toast-content">
+    <span class="toast-icon">✅</span>
+    <p>User details updated successfully!</p>
+    <button class="close-btn" (click)="showToast = false">&times;</button>
+  </div>
+  <div class="toast-progress"></div>
+</div>
+
 <div class="search-container">
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchProducts()">Search</button>
 </div>
+
 <!-- <table class="products-table">
   <tr>
     <th>Product Name</th>
@@ -45,6 +55,7 @@
     <img [src]="product.image_url" alt="Product Image" class="product-image">
     <h3>{{ product.name }}</h3>
     <p>{{ product.price | currency:'R' }}</p>
+    <p>Qty: {{product.stock}}</p>
     <a href="javascript:void(0);" (click)="openModal(product)" class="info-link">Description</a> <br>
     <!-- Quantity Input -->
     <input [(ngModel)]="product.orderQuantity" type="number" min="1" 
@@ -54,7 +65,7 @@
   </div>
 </div>
 
-
+</div> <!--end of main container-->
 
 <!-- Product Modal -->
 <!-- <div class="modal" [ngClass]="{ 'show': selectedProduct }" (click)="closeModal($event)">

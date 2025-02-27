@@ -46,6 +46,7 @@ export class DashboardComponent implements AfterViewInit {
   image2?: string;
   image3?: string;
   showModal: boolean = false;
+  showToast = false;
 
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private dialog: MatDialog) {}
 
@@ -159,9 +160,14 @@ export class DashboardComponent implements AfterViewInit {
     };
 
     this.dataService.addToCart(cartItem).subscribe(() => {
-      alert(`${product.name} added to cart!`);
+      // alert(`${product.name} added to cart!`);
       console.log("user_Id is", userId);
-      location.reload(); //reload the whole page;
+      this.showToast = true;
+      // Delay page reload by 10 seconds
+setTimeout(() => {
+  location.reload();
+}, 3000); 
+    setTimeout(() => this.showToast = false, 3000); // Hide after 10 seconds
     });
   }
   

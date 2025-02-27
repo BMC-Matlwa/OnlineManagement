@@ -21,6 +21,7 @@ export class OrderCartComponent {
   cart: any[] = [];
   cartItems: any[] = [];
   cartEmpty: boolean = false;
+  showToast = false;
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -113,10 +114,15 @@ export class OrderCartComponent {
     this.dataService.checkoutCart(userId).subscribe(
       (response) => {
         console.log("Checkout successful:", response);
-        alert("Purchase successful!");
-      // this.cart = [];
-      this.loadCart(); // Refresh cart
-      location.reload(); //reload the whole page
+        // alert("Purchase successful!");
+      // // this.cart = [];
+      // this.loadCart(); // Refresh cart
+      this.showToast = true;
+      // Delay page reload by 10 seconds
+setTimeout(() => {
+  location.reload();
+}, 3000); 
+    setTimeout(() => this.showToast = false, 3000); // Hide after 10 seconds
     },
   (error) => {
     console.error("Checkout failed:", error);

@@ -18,6 +18,7 @@ export class UserDetailsComponent implements OnInit {
   editMode = false;
   userName: string = '';
   isAdmin: boolean = false;
+  showToast = false;
 
   constructor(private dataService: DataService, private router:Router) {}
 
@@ -56,7 +57,13 @@ export class UserDetailsComponent implements OnInit {
       this.dataService.updateUser(userId, this.user).subscribe(
         (response) => {
           this.editMode = false;
-          alert('User details updated successfully!');
+          // alert('User details updated successfully!');
+          this.showToast = true;
+      // Delay page reload by 10 seconds
+setTimeout(() => {
+  location.reload();
+}, 3000); 
+    setTimeout(() => this.showToast = false, 3000); // Hide after 10 seconds
         },
         (error) => {
           console.error('Error updating user details:', error);
@@ -66,6 +73,11 @@ export class UserDetailsComponent implements OnInit {
     } else {
       console.error('User ID not found in localStorage');
     }
+  }
+  
+  show() {
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000); // Hide after 3 seconds
   }
   
 }

@@ -1,6 +1,16 @@
 <app-navbar></app-navbar>
 <div class="user-details-container">
     <h2>My Details</h2><!-- <h2>{{ userName }}'s Details</h2> -->
+    <div *ngIf="showToast" class="toast">
+      <div class="toast-content">
+        <span class="toast-icon">✅</span>
+        <p>User details updated successfully!</p>
+        <button class="close-btn" (click)="showToast = false">&times;</button>
+      </div>
+      <div class="toast-progress"></div>
+    </div>
+    
+    
     <div class="detail-item">
       <label>Name:</label>
       <span *ngIf="!editMode">{{ user.name }}</span>
@@ -30,6 +40,21 @@
       <label>Address:</label>
       <span *ngIf="!editMode">{{ user.address }}</span>
       <textarea *ngIf="editMode" [(ngModel)]="user.address"></textarea>
+    </div>
+    <div class="detail-item">
+      <label>Province:</label>
+      <span *ngIf="!editMode">{{ user.province }}</span>
+      <select *ngIf="editMode" [(ngModel)]="user.province">
+        <option value="Gauteng">Gauteng</option>
+        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+        <option value="Mpumalanga">Mpumalanga</option>
+        <option value="Limpopo">Limpopo</option>
+        <option value="Durban">Durban</option>
+        <option value="Western Cape">Western Cape</option>
+        <option value="Northern Cape">Northern Cape</option>
+        <option value="Eastern Cape">Eastern Cape</option>
+        <option value="North West">North West</option>
+      </select>
     </div>
     <div class="detail-item">
         <label>Gender:</label>

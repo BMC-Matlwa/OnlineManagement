@@ -396,14 +396,14 @@ app.get('/api/users/:id', async (req, res) => {
 //ADD TO USERS TABLE
 app.put('/api/users/:id', (req, res) => { //for user updating
   const userId = req.params.id;
-  const { name, email, phone, address, gender, dob } = req.body;
+  const { name, email, phone, address, gender, dob, province } = req.body;
 
   const query = `
     UPDATE users
-    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, province = $8
     WHERE id = $7
   `;
-  const values = [name, email, phone, address, gender, dob, userId];
+  const values = [name, email, phone, address, gender, dob, userId, province];
 
   pool.query(query, values)
   .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
