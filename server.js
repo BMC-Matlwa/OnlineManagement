@@ -296,10 +296,10 @@ app.post('/api/data', async (req, res) => {
   try {
     const { name, description, price, stock, image_url } = req.body;
 
-    // Insert new order into the database
+    // Insert new order into the database //not working on admin the one tha works is down there
     const insertQuery = `
       INSERT INTO products (name, description, price, stock, image_url)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *`;
 
     const client = await pool.connect();
@@ -318,32 +318,61 @@ app.post('/api/data', async (req, res) => {
   }
 });
 
+// app.put('/api/data/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const { name, description, price, stock, image_url } = req.body;
+
+//   const updateQuery = `
+//     UPDATE products 
+//     SET name = $1, description = $2, price = $3, stock = $4, image_url = $6
+//     WHERE id = $5 
+//     RETURNING *`;
+
+//   try {
+//     const client = await pool.connect();
+//     const result = await client.query(updateQuery, [name, description, price, stock, image_url, id]);
+
+//     await client.release();
+
+//     if (result.rows.length > 0) {
+//       res.status(200).json(result.rows[0]); // Return updated item
+//     } else {
+//       res.status(404).json({ message: 'Order not found' });
+//     }
+//   } catch (error) {
+//     console.error('Error updating order:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
 app.put('/api/data/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, stock } = req.body;
+  const { name, description, price, stock, image_url } = req.body;
 
   const updateQuery = `
     UPDATE products 
-    SET name = $1, description = $2, price = $3, stock = $4
-    WHERE id = $5 
-    RETURNING *`;
+    SET name = $1, description = $2, price = $3, stock = $4, image_url = $5
+    WHERE id = $6 
+    RETURNING *;
+  `;
 
   try {
     const client = await pool.connect();
-    const result = await client.query(updateQuery, [name, description, price, stock, id]);
+    const result = await client.query(updateQuery, [name, description, price, stock, image_url, id]);
 
-    client.release();
+    await client.release(); // Ensure the connection is properly released
 
     if (result.rows.length > 0) {
       res.status(200).json(result.rows[0]); // Return updated item
     } else {
-      res.status(404).json({ message: 'Order not found' });
+      res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
-    console.error('Error updating order:', error);
+    console.error('Error updating product:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 app.delete('/api/data/:id', async (req, res) => {
   const { id } = req.params;
@@ -415,14 +444,14 @@ app.put('/api/users/:id', (req, res) => { //for user updating
 
 app.put('/api/user/:id', (req, res) => { //for admin updating
   const userId = req.params.id;
-  const { name, email, phone, address, gender, dob, password, role } = req.body;
+  const { name, email, phone, address, gender, dob, role } = req.body;
 
   const query = `
     UPDATE users
-    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, password = $8, role = $9
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, role = $8
     WHERE id = $7
   `;
-  const values = [name, email, phone, address, gender, dob, userId, password, role] ;
+  const values = [name, email, phone, address, gender, dob, userId, role] ;
 
   pool.query(query, values)
   .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
@@ -599,22 +628,22 @@ app.put('/api/products/:id/stock', async (req, res) => {
 });
 
 app.post('/api/productsData', async (req, res) => {
-  const { name, description, price, stock } = req.body;
+  const { name, description, price, stock, image_url } = req.body;
 
-  if (!name || !description || price == null || stock == null) {
+  if (!name || !description || price == null || stock == null || image_url == null) {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
   try {
     const insertQuery = `
-      INSERT INTO products (name, description, price, stock)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO products (name, description, price, stock, image_url)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
 
     const client = await pool.connect();
     try {
-      const result = await client.query(insertQuery, [name, description, price, stock]);
+      const result = await client.query(insertQuery, [name, description, price, stock, image_url]);
       res.status(201).json({
         message: 'Product added successfully',
         product: result.rows[0],

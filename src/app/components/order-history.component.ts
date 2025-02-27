@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';  
 import { NavbarComponent } from '../components/navbar.component'; 
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-order-history',
@@ -14,17 +16,32 @@ import { NavbarComponent } from '../components/navbar.component';
 })
 export class OrderHistoryComponent {
   orders: any[] = []; //to view user orders
+  ordersADM: any[] = []; //to view user orders
   products: any[] = [];
   userId!: number; // Definite assignment assertion
   userRole: string = '';
   groupedOrders: any[] = [];
+  sumApprovedOrders: number = 0;
+  sumDeclinedOrders: number = 0;
+  sumPendingOrders: number = 0;
+  sumAllOrders: number = 0;
+  sortedOrders: any[] = [];
+  sortColumn: string = ''; // Column being sorted
+  sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
 
   constructor(private dataService: DataService, private router: Router) {}
   
 
   ngOnInit(): void {
     this.fetchOrders();
+    this.fetchOrdersADM();
     this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
+    this.userRole = localStorage.getItem('userRole')  || ''; // Retrieve the user role
+
+    //get orders and username
+    this.dataService.getOrders().subscribe((response) => {
+      this.orders = response;
+    });
 }
 
   fetchOrders(): void {
@@ -130,4 +147,231 @@ export class OrderHistoryComponent {
   formatOrderByDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString();
   }
+
+  //ADMINS SIDE
+
+  loadStoredSums(): void {
+    //calculate the sum of orders approved and record the last sum.
+    const storedSum = localStorage.getItem('approvedOrdersSum');
+    const declinedSum = localStorage.getItem('declinedOrdersSum');
+    const pendingSum = localStorage.getItem('pendingOrdersSum');
+    const allSum = localStorage.getItem('allOrdersSum');
+    if (storedSum) {
+      this.sumApprovedOrders = parseInt(storedSum, 10);
+    } else {
+      this.calculateSumOfApprovedOrders();
+    }
+    this.sumApprovedOrders = storedSum ? parseInt(storedSum, 10) : 0;
+    this.sumDeclinedOrders = declinedSum ? parseInt(declinedSum, 10) : 0;
+    this.sumPendingOrders = pendingSum ? parseInt(pendingSum, 10) : 0;
+    this.sumAllOrders = allSum ? parseInt(allSum, 10) : 0;
+  
+    if (!storedSum || !declinedSum || !pendingSum) {
+      this.calculateOrderSums();
+    }
+  }
+  
+  calculateOrderSums(): void {
+    this.sumApprovedOrders = this.ordersADM
+      .filter(order => order.status === 'Approved')
+      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+  
+    this.sumDeclinedOrders = this.ordersADM
+      .filter(order => order.status === 'Declined')
+      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+  
+    this.sumPendingOrders = this.ordersADM
+      .filter(order => order.status === 'Processing')
+      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+  
+    this.sumAllOrders = this.ordersADM
+      .reduce((sum, order) => sum + (order.quantity || 0), 0); 
+    // Store the sums in localStorage for persistence
+    localStorage.setItem('approvedOrdersSum', this.sumApprovedOrders.toString());
+    localStorage.setItem('declinedOrdersSum', this.sumDeclinedOrders.toString());
+    localStorage.setItem('pendingOrdersSum', this.sumPendingOrders.toString());
+    localStorage.setItem('allOrdersSum', this.sumAllOrders.toString());
+  }
+  
+  calculateSum(status: string): number {
+    return this.ordersADM
+      .filter(order => order.status === status)
+      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+  }
+  
+  // Sort function triggered by button clicks
+  sortOrders(): void {
+    this.sortedOrders = [...this.ordersADM].sort((a, b) => {
+      const valueA = a[this.sortColumn];
+      const valueB = b[this.sortColumn];
+  
+      if (typeof valueA === 'string') {
+        return this.sortDirection === 'asc'
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return this.sortDirection === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+    });
+  }
+  
+  // Set sorting column and toggle direction
+  setSorting(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.sortOrders();
+  }
+  
+    calculateSumOfApprovedOrders(): void {
+      this.sumApprovedOrders = this.ordersADM
+      .filter(order => order.status === 'Approved') // Only include orders that are approved
+      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+  
+      localStorage.setItem('approvedOrdersSum', this.sumApprovedOrders.toString());
+  
+      console.log(`Sum of approved orders: ${this.sumApprovedOrders}`);
+    }
+  
+    approveOrder(order: any): void {
+      // const productName = order.name;
+  
+      this.dataService.updateOrderStatus(order.id, 'Approved').subscribe(
+        (response) => {
+          console.log('Order approved:', response);
+          location.reload(); //reload the whole page
+          order.status = 'Approved';
+          console.log(`Updated status to Approved for: ${order.product_name}`);
+          this.calculateSumOfApprovedOrders();
+  
+  
+          this.updateProductQuantity(order.product_name, order.quantity);
+          console.log('Product_Name:', order.product_name);
+        },
+        (error) => {
+          console.error('Error approving order:', error);
+        }
+      );
+    }
+  
+    declineOrder(order: any): void {
+      // const productName = order.name;
+  
+      this.dataService.updateOrderStatus(order.id, 'Declined').subscribe(
+        (response) => {
+          console.log('Order declined:', response);
+          location.reload(); //reload the whole page
+          order.status = 'Declined';
+          this.calculateSumOfApprovedOrders();
+  
+  
+          this.updateProductQuantity(order.product_name, order.quantity);
+          console.log('Product_Name:', order.product_name);
+        },
+        (error) => {
+          console.error('Error declining order:', error);
+        }
+      );
+    }
+    
+    updateProductQuantity(productName: string, orderedQuantity: number): void {
+      console.log('Product Name:', productName);
+      
+  
+    // Fetch the product by name and update its stock
+    this.dataService.getProductByName(productName).subscribe(
+      (product: any) => {
+        const newStock = product.stock - orderedQuantity;
+        if (newStock >= 0) {
+          // Update the stock for the product based on product name
+          this.dataService.updateProductStock(product.id, newStock).subscribe(
+            (response) => {
+              console.log(`Stock updated for product ${productName}:`, response);
+            },
+            (error) => {
+              console.error(`Error updating stock for product ${productName}:`, error);
+            }
+          );
+        } else {
+          console.warn(`Insufficient stock for product ${productName}.`);
+        }
+      },
+      (error) => {
+        console.error(`Error fetching product ${productName}:`, error);
+      }
+    );
+    }
+    
+    fetchOrdersADM(): void {
+      this.dataService.getOrders().subscribe(
+        (response) => {
+          this.ordersADM = response;
+          console.log('Orders fetched:', this.ordersADM);
+          this.sortedOrders = [...this.ordersADM]; // Initialize sorted list
+          this.sortOrders(); // Apply default sor
+          this.calculateOrderSums();
+        },
+        (error) => {
+          console.error('Error fetching orders:', error);
+        }
+      );
+    }
+    
+    updateOrderStatus(order: any, status: string): void {
+      this.dataService.updateOrderStatus(order.id, status).subscribe(
+        (response) => {
+          order.status = status;
+          alert(`Order status updated to ${status}`);
+        },
+        (error) => {
+          console.error('Error updating order status:', error);
+        }
+      );
+    }
+  
+    downloadPDF() {
+      const doc = new jsPDF();
+    
+      // Title
+      doc.setFontSize(18);
+      doc.text('Order Summary Report', 14, 15);
+    
+      // Add Date
+      const currentDate = new Date().toLocaleDateString();
+      doc.setFontSize(12);
+      doc.text(`Report Date: ${currentDate}`, 14, 25);
+    
+  
+  
+    // Convert table to PDF format
+    autoTable(doc, {
+      head: [['Product Name', 'Quantity', 'Status', 'Order Date', 'Ordered By']],
+      body: this.orders.map(order => [
+        order.product_name,
+        order.quantity,
+        order.status,
+        this.formatOrderDate(order.order_date),
+        order.name
+      ]),
+      startY: 35, // Ensure the table starts after the order summary
+    });
+    
+    const finalY = (doc as any).lastAutoTable.finalY || 35;
+    
+       // Order Summary
+       const summaryY = finalY + 15;
+       doc.setFontSize(14);
+       doc.text('Order Summary:', 14, summaryY);
+       
+       doc.setFontSize(12);
+       doc.text(`Approved Orders: ${this.sumApprovedOrders}`, 14, summaryY + 10);
+       doc.text(`Declined Orders: ${this.sumDeclinedOrders}`, 14, summaryY + 20);
+       doc.text(`Pending Orders: ${this.sumPendingOrders}`, 14, summaryY + 30);
+       doc.text(`Total Orders: ${this.sumAllOrders}`, 14, summaryY + 40);
+      // Save the PDF
+      doc.save(`orders_${currentDate.replace(/\//g, '-')}.pdf`);
+    }
 }

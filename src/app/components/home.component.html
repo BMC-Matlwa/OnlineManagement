@@ -26,7 +26,7 @@
     <p>Please contact Admin &#64;Deviieydevendranath&#64;gmail.com if you would like to revoke your profile.</p>
   </section>
   <!-- only seen by admin -->
-  <section *ngIf="userRole === 'admin'" class="features" style="cursor: pointer;" (click)="goToAdmin('orders')">
+  <section *ngIf="userRole === 'admin'" class="features" style="cursor: pointer;" (click)="goToOrders()">
     <h2>Admin Features</h2>
     <div class="feature-list">
       <div class="feature-item">
@@ -34,14 +34,19 @@
         <p>Track and manage orders in a seamless manner. View all details about your orders and easily update them.</p>
       </div>
 
-      <div class="feature-item"  (click)="goToAdmin('products')">
-        <h3>Products Dashboard</h3>
-        <p>Get detailed insights of products. See real-time stock on hand.</p>
+      <div class="feature-item"  (click)="goToAdmin()">
+        <h3>Products</h3>
+        <p>View, Add, Edit or Delete producst. See real-time stock on hand.</p>
       </div>
 
-      <div class="feature-item"  (click)="goToAdmin('products')">
+      <div class="feature-item"  (click)="goToUsers()">
         <h3>Registered Users</h3>
         <p>Get detailed information about registered users.</p>
+      </div>
+
+      <div class="feature-item"  (click)="goToDash()">
+        <h3>Dashboard</h3>
+        <p>Get detailed insights of products. See real-time stock on hand and orders.</p>
       </div>
 
     </div>

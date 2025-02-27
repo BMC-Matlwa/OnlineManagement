@@ -44,8 +44,8 @@ export class HomeComponent {
     this.router.navigate(['/login']);
   }
 
-  goToAdmin(tab: string): void {
-    this.router.navigate(['/admin'], { queryParams: { tab } });
+  goToAdmin(): void {
+    this.router.navigate(['/admin']);
   }
   
   goToDashboard(tab: string): void {
@@ -58,5 +58,13 @@ export class HomeComponent {
 
   goToCart(): void {
     this.router.navigate(['/View-cart'])
+  }
+
+  goToUsers(): void {
+    this.router.navigate(['/users-registered'])
+  }
+
+  goToDash(): void {
+    this.router.navigate(['/analysis'])
   }
 }

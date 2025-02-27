@@ -1,6 +1,6 @@
 <app-navbar></app-navbar> 
 
-<h2>Your Orders</h2>
+
 
 <!-- <table>
   <thead>
@@ -18,29 +18,92 @@
     <td>{{ formatOrderDate(order.order_date) }}</td>
   </tr>
 </table> -->
+<section *ngIf="userRole === 'user'">
+  <h2>Your Orders</h2>
+    <div *ngFor="let orderDate of groupedOrders | keyvalue">
+      <h3 class="order-date"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+        <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
+        <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+      </svg>&nbsp;{{ orderDate.key }}</h3> <!-- Styled Date Header -->
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orderDate.value">
+            <td>{{ order.product_name }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.order_date | date: 'shortTime'}}</td>
+            <td>{{ order.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</section>
 
-<div *ngFor="let orderDate of groupedOrders | keyvalue">
-  <h3 class="order-date"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
-    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
-    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-  </svg>&nbsp;{{ orderDate.key }}</h3> <!-- Styled Date Header -->
-  <table class="orders-table">
-    <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Time</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let order of orderDate.value">
-        <td>{{ order.product_name }}</td>
-        <td>{{ order.quantity }}</td>
-        <td>{{ order.order_date | date: 'shortTime'}}</td>
-        <td>{{ order.status }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<section *ngIf="userRole === 'admin'">
+  <h2>Approve or Decline Orders</h2>
+  <div style="display: flex; justify-content: flex-end; width: 90%;">
+    <button (click)="downloadPDF()" style="margin-bottom: 10px; background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; width: 150px">
+        Download as &nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-filetype-pdf" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM1.6 11.85H0v3.999h.791v-1.342h.803q.43 0 .732-.173.305-.175.463-.474a1.4 1.4 0 0 0 .161-.677q0-.375-.158-.677a1.2 1.2 0 0 0-.46-.477q-.3-.18-.732-.179m.545 1.333a.8.8 0 0 1-.085.38.57.57 0 0 1-.238.241.8.8 0 0 1-.375.082H.788V12.48h.66q.327 0 .512.181.185.183.185.522m1.217-1.333v3.999h1.46q.602 0 .998-.237a1.45 1.45 0 0 0 .595-.689q.196-.45.196-1.084 0-.63-.196-1.075a1.43 1.43 0 0 0-.589-.68q-.396-.234-1.005-.234zm.791.645h.563q.371 0 .609.152a.9.9 0 0 1 .354.454q.118.302.118.753a2.3 2.3 0 0 1-.068.592 1.1 1.1 0 0 1-.196.422.8.8 0 0 1-.334.252 1.3 1.3 0 0 1-.483.082h-.563zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638z"/>
+          </svg>
+      </button>
+    </div>
+    <div class="sort-buttons">
+        <label><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+            <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+          </svg>Sort By:</label>
+        <button (click)="setSorting('product_name')">Product Name</button>
+        <button (click)="setSorting('quantity')">Quantity</button>
+        <button (click)="setSorting('status')">Status</button>
+        <button (click)="setSorting('order_date')">Order Date</button>
+        <button (click)="setSorting('name')">Ordered By</button>
+      </div>
+    <table>
+        <tr>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>Order Date</th>
+          <th>Ordered By</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let order of sortedOrders">
+          <td>{{ order.product_name }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.status }}</td>
+          <td>{{ formatOrderDate(order.order_date) }}</td>
+          <td>{{ order.name }}</td>
+          <td>
+            <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" class="approveBTN">Approve</button>
+            <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" class="deleteBTN">Decline</button>
+          </td>
+        </tr>
+    </table>
+    <br>
+    <div class="order-sum-container">
+    <div class="approved-orders-div">
+        <label for="approvedSum">Approved Orders:</label>
+        <input type="text" id="approvedSum" class="approved-input" [value]="sumApprovedOrders" readonly />
+      </div>&nbsp;&nbsp;
+      <div class="declined-orders-div">
+        <label for="declinedSum">Declined Orders:</label>
+        <input type="text" id="declinedSum" class="declined-input" [value]="sumDeclinedOrders" readonly />
+      </div>&nbsp;&nbsp;
+      <div class="pending-orders-div">
+        <label for="pendingSum">Pending Orders:</label>
+        <input type="text" id="pendingSum" class="pending-input" [value]="sumPendingOrders" readonly />
+      </div>&nbsp;&nbsp;
+      <div class="total-orders-div">
+        <label for="allSum">Total Orders:</label>&nbsp;&nbsp;
+        <input type="text" id="allSum" class="all-input" [value]="sumAllOrders" readonly />
+      </div>
+    </div>
+</section>
 

@@ -38,6 +38,38 @@ h2 {
   button:hover {
     background-color: #28f32e;
   }
+  .editBTN{
+    padding: 10px 20px;
+    background-color:orange;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top : 10px;
+  }
+
+  .deleteBTN{
+    padding: 10px 20px;
+    background-color:red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top : 10px;
+  }
+
+  .approveBTN{
+    padding: 10px 20px;
+    background-color:green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top : 10px;
+  }
   
   form {
     width: 80%;
@@ -188,3 +220,119 @@ h2 {
     background-color: #f1f1f1;
   }
   
+  .approved-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+    width: 20%; /* Same width as table */
+  margin: 0 auto; /*to match the margin of the tables*/
+  }
+
+  .declined-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+    width: 20%; /* Same width as table */
+  margin: 0 auto; /*to match the margin of the tables*/
+  }
+
+ .pending-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+     width: 20%; /*Same width as table */
+  margin: 0 auto; /*to match the margin of the tables*/
+  }
+.total-orders-div{
+    margin-top: 20px; /* Optional: Adjust spacing */
+     width: 20%; /*Same width as table */
+  margin: 0 auto;
+}
+  .approved-input {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #155724;
+    text-align: center;
+    font-size: 1.5rem;
+    font: bolder;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
+  .declined-input {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #721c24;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
+  .pending-input {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #856404;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+  
+  .all-input {
+    background-color: #b2a4f8;
+    color: #2f14b9;
+    border-color: #2f14b9;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 5px;
+    width: 100px
+  }
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  
+  .search-container {
+    margin: 20px auto;
+    max-width: 800px;
+    width: 80%
+  }
+  .search-container input{
+    width: 83%;
+    max-width: 800px;
+  }
+
+  .sort-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+  }
+  
+  .sort-buttons label {
+    margin-right: 10px;
+    font-size: 16px;
+  }
+  
+  .sort-buttons button {
+    background-color: #007bff; /* Primary blue */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .sort-buttons button:hover {
+    background-color: #0056b3; /* Darker blue */
+    transform: scale(1.05);
+  }
+  
+  .sort-buttons button:active {
+    background-color: #003f80;
+    transform: scale(0.98);
+  }

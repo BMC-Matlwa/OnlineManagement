@@ -13,6 +13,7 @@ import { ForgotPasswordComponent } from './components/forgot-password.component'
 import { ResetPasswordComponent } from './components/reset-password.component';
 import { OrderCartComponent } from './components/order-cart.component';
 import { OrderHistoryComponent } from './components/order-history.component';
+import { AdminAnalyticsComponent } from './components/admin-analytics.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -26,5 +27,6 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent},
   { path: 'reset-password/:token', component: ResetPasswordComponent},
   { path: 'View-cart', component: OrderCartComponent},
-  {path: 'order-history', component: OrderHistoryComponent}
+  {path: 'order-history', component: OrderHistoryComponent},
+  {path: 'analysis', component: AdminAnalyticsComponent}
 ];

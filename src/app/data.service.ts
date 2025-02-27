@@ -21,8 +21,8 @@ export class DataService {
     return this.http.post<any>(this.apiUrl, newItem);  // Add new data
   }
 
-  updateData(id: number, updatedItem: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, updatedItem);  // Update data
+  updateData(id: number, editingItem: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, editingItem);  // Update data
   }
 
   deleteData(id: number): Observable<any> {
