@@ -350,6 +350,7 @@ h3 {
 .toast p {
   margin: 0;
   flex-grow: 1;
+  color: black;
 }
 
 .close-btn {

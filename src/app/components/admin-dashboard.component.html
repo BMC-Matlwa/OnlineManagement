@@ -1,5 +1,15 @@
 <app-navbar></app-navbar>
 <h2>View and Add Products</h2>
+
+<div *ngIf="showToast" class="toast">
+  <div class="toast-content">
+    <span class="toast-icon">✅</span>
+    <p>Changed successfully!</p>
+    <button class="close-btn" (click)="showToast = false">&times;</button>
+  </div>
+  <div class="toast-progress"></div>
+</div>
+
     <!-- Search Bar -->
 <div class="search-container">
     <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;

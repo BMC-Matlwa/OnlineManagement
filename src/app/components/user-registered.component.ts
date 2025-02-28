@@ -23,6 +23,7 @@ export class UserRegisteredComponent {
   itemsPerPage = 7; 
   totalItems: number = this.users.length;
   searchQuery: string = '';
+  showToast = false;
 
 
   constructor(private dataService: DataService, private router: Router) {}
@@ -118,7 +119,11 @@ get totalPages() {
   saveUser(user: any): void {
     this.dataService.updateUserP(user.id, user).subscribe(
       () => {
-        alert('User updated successfully!');
+        // alert('User updated successfully!');
+        setTimeout(() => {
+          location.reload();
+        }, 3000); 
+            setTimeout(() => this.showToast = false, 3000);
         user.editMode = false;
       },
       (error) => {

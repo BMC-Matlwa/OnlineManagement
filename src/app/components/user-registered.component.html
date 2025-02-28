@@ -1,7 +1,14 @@
 <app-navbar></app-navbar>
 <div class="user-registered-container">
     <h2>Registered Users</h2>
-
+    <div *ngIf="showToast" class="toast">
+      <div class="toast-content">
+        <span class="toast-icon">✅</span>
+        <p>User details updated successfully!</p>
+        <button class="close-btn" (click)="showToast = false">&times;</button>
+      </div>
+      <div class="toast-progress"></div>
+    </div>
      <!-- Search Bar -->
      <div class="search-container">
         <input type="text" [(ngModel)]="searchQuery" placeholder="Search users..." />&nbsp;&nbsp;&nbsp;

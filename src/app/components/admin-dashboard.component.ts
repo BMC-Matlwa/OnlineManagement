@@ -58,6 +58,7 @@ export class AdminDashboardComponent implements AfterViewInit {
   sortedOrders: any[] = [];
   sortColumn: string = ''; // Column being sorted
   sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
+  showToast = false;
   
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
@@ -160,8 +161,12 @@ searchProducts(): void {
     ).subscribe(
       (response) => {
         console.log('Order added successfully:', response);
-        alert('Order added successfully!');
-        location.reload(); //reload the whole page
+        // alert('Order added successfully!');
+        // location.reload(); //reload the whole page
+        setTimeout(() => {
+          location.reload();
+        }, 3000); 
+            setTimeout(() => this.showToast = false, 3000); // Hide after 3 seconds
         this.newItem = { name: '', stock: null, price: null }; // Reset form fields
       }
     );
@@ -185,9 +190,13 @@ searchProducts(): void {
   saveUser(user: any): void {
     this.dataService.updateUserP(user.id, user).subscribe(
       () => {
-        alert('User updated successfully!');
+        // alert('User updated successfully!');
         user.editMode = false;
-        location.reload(); //reload the whole page
+        // location.reload(); //reload the whole page
+        setTimeout(() => {
+          location.reload();
+        }, 3000); 
+            setTimeout(() => this.showToast = false, 3000);
       },
       (error) => {
         console.error('Error updating user:', error);
