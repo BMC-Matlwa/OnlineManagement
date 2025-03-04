@@ -9,7 +9,7 @@
           <input type="email" id="email" [(ngModel)]="user.email" name="email" required #emailInput="ngModel"
           placeholder="Enter your email">
           <div *ngIf="emailInput.invalid && emailInput.touched">
-            <small style="color: red;">Valid email is required.</small>
+            <small class="error-message">Valid email is required.</small>
           </div>
         </div>
         <br>
@@ -19,7 +19,7 @@
           #passwordInput="ngModel"
           placeholder="Enter your password">
           <div *ngIf="passwordInput.invalid && passwordInput.touched">
-            <small style="color: red;">Password must be at least 6 characters.</small>
+            <small class="error-message">Password must be at least 6 characters.</small>
           </div>
         </div>
         <div *ngIf="errorMessage" class="error-message">
@@ -33,7 +33,7 @@
             </button>
           </div> <br>
 
-      <a href="/register" style=" color: white;">Click here to Register</a>
+      <!-- <a href="/register" style=" color: white;">Click here to Register</a> (ADMIN TO ADD USERS) -->
       <!-- <button type="button" (click)="goToForgotPassword()">Forgot Password?</button> -->
       
       

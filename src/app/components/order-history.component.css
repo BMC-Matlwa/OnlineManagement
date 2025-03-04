@@ -187,6 +187,7 @@ h2 {
     object-fit: cover;
   }
 
+
   .order-date {
     font-size: 1.4rem;
     font-weight: bold;
@@ -196,6 +197,22 @@ h2 {
     text-align: center;
   }
   
+  .order-sum-container {
+
+  margin-left: 370px; /* Same as sidebar width */
+    display: flex;
+    flex-wrap: wrap; /* Ensures responsiveness */
+    gap: 20px; /* Adds space between items */
+    align-items: center; /* Aligns items vertically */
+  }
+  
+  .order-sum-container > div {
+    display: flex;
+    flex-direction: column; /* Keeps label and input stacked */
+    align-items: center; /* Centers the content */
+    text-align: center;
+  }
+
   .orders-table {
     width: 100%;
     border-collapse: collapse;
@@ -287,11 +304,11 @@ h2 {
     width: 100px
   }
 
-  div {
+  /* div {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+  } */
   
   
   .search-container {
@@ -302,6 +319,11 @@ h2 {
   .search-container input{
     width: 83%;
     max-width: 800px;
+  }
+
+  .Section-container{
+    
+  margin-left: 370px; /* Same as sidebar width */
   }
 
   .sort-buttons {
@@ -335,4 +357,13 @@ h2 {
   .sort-buttons button:active {
     background-color: #003f80;
     transform: scale(0.98);
+  }
+  .search-container {
+    margin: 20px auto;
+    max-width: 800px;
+    width: 80%
+  }
+  .search-container input{
+    width: 83%;
+    max-width: 800px;
   }

@@ -1,5 +1,4 @@
 <app-navbar></app-navbar>
-<h2>View and Add Products</h2>
 
 <div *ngIf="showToast" class="toast">
   <div class="toast-content">
@@ -10,6 +9,8 @@
   <div class="toast-progress"></div>
 </div>
 
+<section class="Section-container">
+  <h2>View and Add Products</h2>
     <!-- Search Bar -->
 <div class="search-container">
     <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
@@ -73,18 +74,20 @@
           
         </tr>
     </table>
+    
     <div *ngIf="selectedImage" class="image-modal" (click)="closeImage()">
-        <div class="image-modal-content">
-          <img [src]="selectedImage" alt="Product Image" />
-        </div>
+      <div class="image-modal-content">
+        <img [src]="selectedImage" alt="Product Image" />
       </div>
+    </div>
+  </section>
     <!-- Pagination Controls -->
    <div class="pagination">
     <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
   </div>
-
+  <section class="Section-container">
     <!-- Add New Product Form -->
     <h2>Add New Product</h2>
     <form (ngSubmit)="addProductData()">
@@ -106,4 +109,4 @@
 
       <button type="submit" style="background-color: #4CAF50; color: white;">Add Product</button>
     </form>
-
+  </section>

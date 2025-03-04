@@ -1,7 +1,9 @@
 /* home.component.css */
 .home-container {
+  margin-left: 370px; /* Same as sidebar width */
     padding: 20px;
     font-family: Arial, sans-serif;
+    margin-top: 50px;
   }
   
   .home-header {

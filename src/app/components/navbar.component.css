@@ -6,6 +6,10 @@
     background-color: #4CAF50;
     color: white;
     height: 8%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 98%;
   }
   
   .navbar-left a,
@@ -16,7 +20,7 @@
   }
   
   .navbar-left a:hover {
-    color: #ddd;
+    color: #4CAF50;
   }
   
   .navbar-right {
@@ -84,12 +88,12 @@
 } */
 
 .dropdown {
-  margin-top: 94px; /*where the dropdown starts*/
+  margin-top: 93px; /*where the dropdown starts */
   position: fixed; /* Ensures the dropdown stays in place when scrolling */
   top: 0;
   left: 0;
-  width: 300px; /* Set the width of the dropdown */
-  height: 100%; /* Makes the dropdown fill the full height of the page */
+  width: 370px; /* Set the width of the dropdown */
+  height: 100vh; /* Makes the dropdown fill the full height of the page */
   background-color: #333; /* Background color for the menu */
   color: white; /* Text color */
   z-index: 1000; /* Ensure the dropdown appears on top of other elements */
@@ -97,12 +101,14 @@
   flex-direction: column; /* Align the links vertically */
   padding: 20px;
   box-sizing: border-box; /* Ensure padding doesn’t affect width */
+  overflow-y: auto; /* Allows scrolling if needed */
 }
 
 .dropdown a {
   padding: 20px;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
+  text-align: left;
 }
 
 .dropdown button{

@@ -9,12 +9,17 @@
       </div>
       <div class="toast-progress"></div>
     </div>
+    <h2>Registered Users</h2>
      <!-- Search Bar -->
      <div class="search-container">
         <input type="text" [(ngModel)]="searchQuery" placeholder="Search users..." />&nbsp;&nbsp;&nbsp;
         <button (click)="searchUsers()">Search</button>
     </div>
     
+    <div class="search-container">
+      <button>Add User(static)</button>
+  </div>
+
     <table>
       <thead>
         <tr>
@@ -22,9 +27,6 @@
           <th>Email</th>
           <th>Role</th>
           <th>Phone</th>
-          <th>Address</th>
-          <th>Gender</th>
-          <th>Date of Birth</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -35,16 +37,13 @@
           <td>{{ user.email }}</td>
           <td>{{ user.role }}</td>
           <td>{{ user.phone }}</td>
-          <td>{{ user.address }}</td>
-          <td>{{ user.gender }}</td>
-          <td>{{ formatOrderDate(user.dob) }}</td>
           <td>
             <button (click)="toggleEdit(user)" class="editBTN">Edit</button>
           </td>
         </ng-container>
         <ng-template #editForm>
-          <td><input [(ngModel)]="user.name" /></td>
-          <td><input [(ngModel)]="user.email" /></td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
           <td>
             <select [(ngModel)]="user.role">
                 <option value="User">User</option>
@@ -52,19 +51,10 @@
               <option value="Inactive">Deactivate</option>
             </select>
         </td>
-
-          <td><input [(ngModel)]="user.phone" /></td>
-          <td><input [(ngModel)]="user.address" /></td>
+        <td>{{ user.phone }}</td>
+      
           <td>
-            <select [(ngModel)]="user.gender">
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </td>
-          <td><input type="date" [(ngModel)]="user.dob" /></td>
-          <td>
-            <button (click)="saveUser(user)">Save</button>
+            <button (click)="saveUser(user)">Save</button>&nbsp;
             <button (click)="cancelEdit(user)">Cancel</button>
           </td>
         </ng-template>

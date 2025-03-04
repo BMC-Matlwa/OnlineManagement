@@ -15,6 +15,7 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './order-history.component.css'
 })
 export class OrderHistoryComponent {
+  allOrders: any[] = [];
   orders: any[] = []; //to view user orders
   ordersADM: any[] = []; //to view user orders
   products: any[] = [];
@@ -28,6 +29,7 @@ export class OrderHistoryComponent {
   sortedOrders: any[] = [];
   sortColumn: string = ''; // Column being sorted
   sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
+  searchQuery: string = '';
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -42,6 +44,7 @@ export class OrderHistoryComponent {
     this.dataService.getOrders().subscribe((response) => {
       this.orders = response;
     });
+    this.groupedOrders = this.groupOrdersByDate(this.orders);
 }
 
   fetchOrders(): void {
@@ -49,8 +52,9 @@ export class OrderHistoryComponent {
     if (userId) {
       this.dataService.getOrdersByUser(userId).subscribe(
         (response) => {
-          this.orders = response;
-          console.log('Orders fetched for user:', this.orders);
+          this.allOrders = response;
+          this.orders = [...this.allOrders]
+          console.log('Orders fetched for user:', this.allOrders);
           this.groupedOrders = this.groupOrdersByDate(response);
         },
         (error) => {
@@ -59,6 +63,18 @@ export class OrderHistoryComponent {
       );
     } else {
       console.error('User not logged in');
+    }
+  }
+
+  searchOrders(): void {
+    console.log("Search Query:", this.searchQuery); // Debugging
+    if (this.searchQuery.trim() === '') {
+      this.orders = [...this.allOrders]; // Reset if search is empty
+    } else {
+      const query = this.searchQuery.toLowerCase();
+      this.orders = this.allOrders.filter(product =>
+        product.product_name?.toLowerCase().includes(query) 
+      );
     }
   }
 
@@ -133,8 +149,26 @@ export class OrderHistoryComponent {
     return this.orders.filter(order => order.status === 'Processing');
   }
 
+  // groupOrdersByDate(orders: any[]): any {
+  //   return orders.reduce((acc, order) => {
+  //     const date = this.formatOrderByDate(order.order_date);
+  //     if (!acc[date]) {
+  //       acc[date] = [];
+  //     }
+  //     acc[date].push(order);
+  //     return acc;
+  //   }, {});
+  // }
+
   groupOrdersByDate(orders: any[]): any {
-    return orders.reduce((acc, order) => {
+    // Sort orders by order_date DESC (newest first)
+    const sortedOrders = orders.sort(
+      (a, b) => new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
+    );
+  
+    console.log("Sorted Orders:", sortedOrders); // Debugging: Check the output
+  
+    return sortedOrders.reduce((acc, order) => {
       const date = this.formatOrderByDate(order.order_date);
       if (!acc[date]) {
         acc[date] = [];
@@ -144,6 +178,11 @@ export class OrderHistoryComponent {
     }, {});
   }
 
+  sortByDescending(a: any, b: any) {
+    return b.key.localeCompare(a.key); // Ensures descending order
+  }
+  
+  
   formatOrderByDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString();
   }

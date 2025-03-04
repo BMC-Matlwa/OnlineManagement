@@ -17,6 +17,7 @@ import { OrderHistoryComponent } from './components/order-history.component';
 import { AdminAnalyticsComponent } from './components/admin-analytics.component';
 
 
+
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

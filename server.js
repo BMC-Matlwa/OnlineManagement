@@ -574,7 +574,7 @@ app.get('/api/orders/user/:userId', async (req, res) => { //for viewing orders a
 
   try {
     const client = await pool.connect();
-    const query = 'SELECT * FROM orders WHERE user_id = $1'; // Fetch orders by user_id
+    const query = 'SELECT * FROM orders WHERE user_id = $1 order by order_date desc'; // Fetch orders by user_id
     const result = await client.query(query, [userId]);
     client.release();
 
@@ -588,6 +588,25 @@ app.get('/api/orders/user/:userId', async (req, res) => { //for viewing orders a
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+app.get('/api/orders/stats', async (req, res) => {
+  try {
+    const query = `
+      SELECT status, COUNT(*) as count 
+      FROM orders 
+      GROUP BY status;
+    `;
+    const client = await pool.connect();
+    const result = await client.query(query);
+    client.release();
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching order stats:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 //Table orders end ------------------------------------------------------------------------------------------
 

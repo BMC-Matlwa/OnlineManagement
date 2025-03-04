@@ -1,3 +1,6 @@
+.user-registered-container{
+  margin-left: 370px; /* Same as sidebar width */
+}
 table {
     width: 80%;
   max-width: 800px; /* Optional: Set a max width */

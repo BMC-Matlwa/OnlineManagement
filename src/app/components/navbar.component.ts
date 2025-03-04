@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 export class NavbarComponent implements OnInit {
   userName: string = ''; // Variable to store the user's name
   isAdmin: boolean = false;
-  menuOpen = false;
+  menuOpen = true;
   isUser: boolean = false;
   isInactive: boolean = false;
   role: string ='';
@@ -58,17 +58,17 @@ export class NavbarComponent implements OnInit {
   }
   
 
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-  }
-   // Close the menu when clicking outside of it
-   closeMenu(event: Event) {
-    if (!this.menuOpen) return;
-    const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown') && !target.closest('.menu')) {
-      this.menuOpen = false;
-    }
-  }
+  // toggleMenu() {
+  //   this.menuOpen = !this.menuOpen;
+  // }
+  //  // Close the menu when clicking outside of it
+  //  closeMenu(event: Event) {
+  //   if (!this.menuOpen) return;
+  //   const target = event.target as HTMLElement;
+  //   if (!target.closest('.dropdown') && !target.closest('.menu')) {
+  //     this.menuOpen = false;
+  //   }
+  // }
 
   getLoggedInUserId(): string | null {
     return localStorage.getItem('userId');  

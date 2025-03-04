@@ -1,7 +1,6 @@
 <app-navbar></app-navbar> 
 
 <div class="products-container">
-<h2>Available Products</h2>
 <!-- Search Bar -->
 <div *ngIf="showToast" class="toast">
   <div class="toast-content">
@@ -11,7 +10,7 @@
   </div>
   <div class="toast-progress"></div>
 </div>
-
+<h2 >Available Products</h2>
 <div class="search-container">
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchProducts()">Search</button>
@@ -82,7 +81,7 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <span class="close-btn" (click)="selectedProduct = null">&times;</span>
 
-    <h2>{{ selectedProduct?.name }}</h2>
+    <h3 class="modal-price" >{{ selectedProduct?.name }}</h3>
 
     <!-- Slideshow Container -->
     <div class="slideshow-container">

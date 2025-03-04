@@ -159,6 +159,7 @@ h2 {
     object-fit: cover;
   }
   .cart-container {
+    margin-left: 370px; /* Same as sidebar width */
     max-width: 600px;
     margin: 20px auto;
     padding: 20px;

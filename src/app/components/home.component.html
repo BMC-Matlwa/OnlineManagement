@@ -6,13 +6,12 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <app-navbar></app-navbar> 
 </head>
 <body>
   <app-navbar></app-navbar>
 <div  class="home-container">
   <header *ngIf="userRole === 'admin' || userRole === 'user'" class="home-header">
-    <h1>Welcome to Online Order!</h1>
+    <h1>Welcome to BMC Online Order System!</h1>
     <p>Your one-stop for placing orders, managing orders and user data.</p>
   </header>
 

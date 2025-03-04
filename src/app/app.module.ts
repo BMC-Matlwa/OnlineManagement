@@ -24,6 +24,9 @@ import { ForgotPasswordComponent } from './components/forgot-password.component'
 import { ResetPasswordComponent } from './components/reset-password.component';
 // import { RouterModule } from '@angular/router';
 import { ValidateEqualDirective } from './validate-equal.directive';
+import { NgChartsModule } from 'ng2-charts';
+import {AdminAnalyticsComponent} from './components/admin-analytics.component';
+import { provideCharts } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,8 @@ import { ValidateEqualDirective } from './validate-equal.directive';
     ForgotPasswordDialogComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    ValidateEqualDirective  // Components should be in declarations
+    ValidateEqualDirective,
+     AdminAnalyticsComponent // Components should be in declarations
   ],
   imports: [
     MatFormFieldModule,
@@ -53,15 +57,13 @@ import { ValidateEqualDirective } from './validate-equal.directive';
     HomeComponent,
     MatDialogModule,
     BrowserAnimationsModule,
-    MatCardModule
-    // ,
-    // RouterModule  // FormsModule should be in imports
+    NgChartsModule
   ],
 //   exports: [                 // If you need to use the directive in other modules, export it
 //     ValidateEqualDirective,
 //     ResetPasswordComponent
 //   ],
-  providers: [DataService],
-  bootstrap: [AppComponent]
+  providers: [DataService, provideCharts()],
+  bootstrap: [AppComponent] //bootstrap: [AppComponent]
 })
 export class AppModule { }

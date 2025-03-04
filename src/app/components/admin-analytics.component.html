@@ -1,1 +1,31 @@
 <app-navbar></app-navbar>
+
+<div class="admin-dashboard">
+  <h2>Admin Analytics Dashboard</h2>
+
+  <div class="charts-container">
+    <div class="chart-box">
+      <h3>Orders Overview</h3>
+      <canvas *ngIf="orderChartData" baseChart 
+        [data]="orderChartData"
+        [type]="orderChartType">
+      </canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>Registered Users</h3>
+      <canvas *ngIf="userChartData" baseChart 
+        [data]="userChartData"
+        [type]="userChartType">
+      </canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>Stock on Hand</h3>
+      <canvas *ngIf="stockChartData" baseChart 
+        [data]="stockChartData"
+        [type]="stockChartType">
+      </canvas>
+    </div>
+  </div>
+</div>
