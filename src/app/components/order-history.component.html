@@ -65,6 +65,7 @@
           <th>Status</th>
           <th>Order Date</th>
           <th>Ordered By</th>
+          <th>Delivery Address</th>
           <th>Actions</th>
         </tr>
         <tr *ngFor="let order of sortedOrders">
@@ -73,6 +74,7 @@
           <td>{{ order.status }}</td>
           <td>{{ formatOrderDate(order.order_date) }}</td>
           <td>{{ order.name }}</td>
+          <td>Upcoming feature‼️</td>
           <td>
             <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" class="approveBTN">Approve</button>
             <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" class="deleteBTN">Decline</button>

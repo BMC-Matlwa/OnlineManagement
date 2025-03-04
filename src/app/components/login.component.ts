@@ -28,10 +28,16 @@ export class LoginComponent {
       .subscribe({
         next: (response) => {
           console.log('Login successful:', response);
+
           localStorage.setItem('userId', response.user.id); //store user info for table insert
           localStorage.setItem('userRole', response.user.role); //store user role for access rights
-          // Redirect to home page
-          this.router.navigate(['/home']);
+
+         // Redirect based on user role
+        if (response.user.role === 'admin') {
+          this.router.navigate(['/analysis']); // Redirect to admin panel
+        } else {
+          this.router.navigate(['/home']); // Default redirect
+        }
         },
         error: (error) => {
           console.error('Error logging in:', error);

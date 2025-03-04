@@ -212,19 +212,19 @@ export class OrderHistoryComponent {
   
   calculateOrderSums(): void {
     this.sumApprovedOrders = this.ordersADM
-      .filter(order => order.status === 'Approved')
-      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+      .filter(order => order.status === 'Approved').length;
+      // .reduce((sum, order) => sum + (order.quantity || 0), 0);
   
     this.sumDeclinedOrders = this.ordersADM
-      .filter(order => order.status === 'Declined')
-      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+      .filter(order => order.status === 'Declined').length;
+      // .reduce((sum, order) => sum + (order.quantity || 0), 0);
   
     this.sumPendingOrders = this.ordersADM
-      .filter(order => order.status === 'Processing')
-      .reduce((sum, order) => sum + (order.quantity || 0), 0);
+      .filter(order => order.status === 'Processing').length;
+      // .reduce((sum, order) => sum + (order.quantity || 0), 0);
   
-    this.sumAllOrders = this.ordersADM
-      .reduce((sum, order) => sum + (order.quantity || 0), 0); 
+    this.sumAllOrders = this.ordersADM.length;
+      // .reduce((sum, order) => sum + (order.quantity || 0), 0); 
     // Store the sums in localStorage for persistence
     localStorage.setItem('approvedOrdersSum', this.sumApprovedOrders.toString());
     localStorage.setItem('declinedOrdersSum', this.sumDeclinedOrders.toString());

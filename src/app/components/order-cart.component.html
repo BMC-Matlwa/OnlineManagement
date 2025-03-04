@@ -56,9 +56,17 @@
   </table>
 
   <div class="cart-actions">
-    <p><strong>Total Items: {{ getTotalQuantity() }}</strong></p>
-    <p><strong>Total Amount: {{ getTotalAmount() | currency:'R' }}</strong></p>
-    <button (click)="navigateToDashboard()" class="checkout-btn">Catalogue</button>
+    <p><strong>Total Items: {{ getTotalQuantity() }}</strong></p> &nbsp;&nbsp;
+    <p><strong>Total Amount: {{ getTotalAmount() | currency:'R' }}</strong></p> &nbsp;&nbsp;
+
+    <!-- Address Input Field -->
+  <input 
+  type="text" 
+  [(ngModel)]="shippingAddress" 
+  placeholder="Enter your address" 
+  class="address-input"
+/>&nbsp;&nbsp;
+    <button (click)="navigateToDashboard()" class="checkout-btn">Catalogue</button>&nbsp;&nbsp;
     <button (click)="checkoutCart(userId)" class="checkout-btn">Purchase</button>
   </div>
 </div>

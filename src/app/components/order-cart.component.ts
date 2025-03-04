@@ -22,6 +22,7 @@ export class OrderCartComponent {
   cartItems: any[] = [];
   cartEmpty: boolean = false;
   showToast = false;
+  shippingAddress: string = '';
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -110,7 +111,19 @@ export class OrderCartComponent {
   
 
   checkoutCart(userId: number): void {
-    ;
+    if (!this.shippingAddress) {
+      alert('Please enter your address before purchasing.');
+      return;
+    }
+  
+    console.log('Purchasing with address:', this.shippingAddress);
+  
+    const purchaseData = {
+      userId: userId,
+      cart: this.cart,
+      address: this.shippingAddress
+    };
+    
     this.dataService.checkoutCart(userId).subscribe(
       (response) => {
         console.log("Checkout successful:", response);

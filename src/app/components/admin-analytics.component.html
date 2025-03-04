@@ -3,29 +3,55 @@
 <div class="admin-dashboard">
   <h2>Admin Analytics Dashboard</h2>
 
-  <div class="charts-container">
+  <div class="charts-container" (click)="orderDetails()">
     <div class="chart-box">
       <h3>Orders Overview</h3>
-      <canvas *ngIf="orderChartData" baseChart 
+      <!-- <canvas *ngIf="orderChartData" baseChart 
         [data]="orderChartData"
         [type]="orderChartType">
-      </canvas>
+      </canvas> -->
+
+      <canvas baseChart
+    [data]="orderChartData"
+    [options]="orderChartOptions"  
+    [type]="orderChartType"
+    [plugins]="orderChartPlugins">
+  </canvas>
     </div>
 
-    <div class="chart-box">
+    <div class="chart-box" (click)="userDetails()">
       <h3>Registered Users</h3>
-      <canvas *ngIf="userChartData" baseChart 
+      <!-- <canvas *ngIf="userChartData" baseChart 
         [data]="userChartData"
         [type]="userChartType">
-      </canvas>
+      </canvas> -->
+      <canvas baseChart
+        [data]="userChartData"
+        [options]="userChartOptions"  
+        [type]="userChartType"
+        [plugins]="userChartPlugins">
+  </canvas>
     </div>
 
-    <div class="chart-box">
+    <div class="chart-box" (click)="productDetails()">
       <h3>Stock on Hand</h3>
-      <canvas *ngIf="stockChartData" baseChart 
+
+      <!-- <canvas baseChart
+  [data]="stockChartData"
+  [options]="stockChartOptions"
+  [type]="'bar'">
+</canvas> -->
+
+      <!-- <canvas *ngIf="stockChartData" baseChart 
         [data]="stockChartData"
         [type]="stockChartType">
-      </canvas>
+      </canvas> -->
+      <canvas baseChart
+        [data]="stockChartData"
+        [options]="stockChartOptions"  
+        [type]="stockChartType"
+        [plugins]="stockChartPlugins">
+  </canvas>
     </div>
   </div>
 </div>
