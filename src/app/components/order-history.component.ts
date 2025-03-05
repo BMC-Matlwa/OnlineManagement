@@ -14,10 +14,11 @@ import autoTable from 'jspdf-autotable';
   templateUrl: './order-history.component.html',
   styleUrl: './order-history.component.css'
 })
-export class OrderHistoryComponent {
+export class OrderHistoryComponent implements OnInit{
   allOrders: any[] = [];
   orders: any[] = []; //to view user orders
   ordersADM: any[] = []; //to view user orders
+  allordersADM: any[] = []; //to view user orders
   products: any[] = [];
   userId!: number; // Definite assignment assertion
   userRole: string = '';
@@ -30,6 +31,7 @@ export class OrderHistoryComponent {
   sortColumn: string = ''; // Column being sorted
   sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
   searchQuery: string = '';
+  data: any[] = []; // Array to hold fetched data
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -47,35 +49,41 @@ export class OrderHistoryComponent {
     this.groupedOrders = this.groupOrdersByDate(this.orders);
 }
 
-  fetchOrders(): void {
-    const userId = this.getLoggedInUserId(); 
-    if (userId) {
-      this.dataService.getOrdersByUser(userId).subscribe(
-        (response) => {
-          this.allOrders = response;
-          this.orders = [...this.allOrders]
-          console.log('Orders fetched for user:', this.allOrders);
-          this.groupedOrders = this.groupOrdersByDate(response);
-        },
-        (error) => {
-          console.error('Error fetching orders for user:', error);
-        }
-      );
-    } else {
-      console.error('User not logged in');
-    }
+fetchOrders(): void {
+  const userId = this.getLoggedInUserId(); 
+  if (userId) {
+    this.dataService.getOrdersByUser(userId).subscribe(
+      (response) => {
+        this.allOrders = response;
+        this.orders = [...this.allOrders]
+        console.log('Orders fetched for user:', this.allOrders);
+        this.groupedOrders = this.groupOrdersByDate(response);
+      },
+      (error) => {
+        console.error('Error fetching orders for user:', error);
+      }
+    );
+  } else {
+    console.error('User not logged in');
   }
+}
+
 
   searchOrders(): void {
     console.log("Search Query:", this.searchQuery); // Debugging
     if (this.searchQuery.trim() === '') {
-      this.orders = [...this.allOrders]; // Reset if search is empty
+      this.sortedOrders = [...this.ordersADM]; // Reset if search is empty
     } else {
       const query = this.searchQuery.toLowerCase();
-      this.orders = this.allOrders.filter(product =>
-        product.product_name?.toLowerCase().includes(query) 
+
+      this.sortedOrders = this.ordersADM.filter(order =>
+      order.order_number?.toLowerCase().includes(query) ||
+      order.product_name?.toLowerCase().includes(query) ||
+      order.name?.toLowerCase().includes(query) ||
+      order.address?.toLowerCase().includes(query)
       );
     }
+    console.log("Filtered Orders:", this.sortedOrders); // Debugging
   }
 
   formatOrderDate(orderDate: string): string {
@@ -350,8 +358,10 @@ export class OrderHistoryComponent {
           this.ordersADM = response;
           console.log('Orders fetched:', this.ordersADM);
           this.sortedOrders = [...this.ordersADM]; // Initialize sorted list
+          this.orders = [...this.sortedOrders]; 
           this.sortOrders(); // Apply default sor
           this.calculateOrderSums();
+          // this.searchOrders();
         },
         (error) => {
           console.error('Error fetching orders:', error);

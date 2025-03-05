@@ -4,8 +4,8 @@
   <div *ngIf="showToast" class="toast">
     <div class="toast-content">
       <span class="toast-icon">✅</span>
-      <p>Order placed successfully!</p>
-      <button class="close-btn" (click)="showToast = false">&times;</button>
+    <p>Order placed successfully! <br> Order Number: <strong>{{ orderNumber }}</strong></p>
+    <button class="close-btn" (click)="showToast = false">&times;</button>
     </div>
     <div class="toast-progress"></div>
   </div>

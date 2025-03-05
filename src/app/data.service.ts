@@ -140,8 +140,11 @@ export class DataService {
   }
 
   // Checkout: Move items from cart to orders
-  checkoutCart(userId: number): Observable<any> {
-    return this.http.post<any>(`http://localhost:3000/api/checkout/${userId}`, {user_id: userId});
+  // checkoutCart(userId: number): Observable<any> {
+  //   return this.http.post<any>(`http://localhost:3000/api/checkout/${userId}`, {user_id: userId});
+  // }
+  checkoutCart(purchaseData: { userId: number; cart: any[]; address: string }) {
+    return this.http.post<any>(`http://localhost:3000/api/checkout/${purchaseData.userId}`, (purchaseData));
   }
   
   getUserCart() {

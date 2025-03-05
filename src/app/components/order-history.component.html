@@ -1,9 +1,9 @@
 <app-navbar></app-navbar> 
      <!-- Search Bar -->
-<div class="search-container">
+<!-- <div class="search-container">
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchOrders()">Search</button>
-</div>
+</div> -->
 
 <section *ngIf="userRole === 'user'" class="Section-container">
   <h2>Your Orders</h2>
@@ -15,20 +15,22 @@
       <table class="orders-table">
         <thead>
           <tr>
+            <th>Order No.</th>
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Time</th>
             <th>Status</th>
-            <th>Address</th>
+            <th>Shipping Address</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let order of orderDate.value">
+            <td>{{ order.order_number}}</td>
             <td>{{ order.product_name }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.order_date | date: 'shortTime'}}</td>
             <td>{{ order.status }}</td>
-            <td>🧑‍🔧🛠Changes incoming</td>
+            <td>{{ order.address }}</td>
           </tr>
         </tbody>
       </table>
@@ -45,7 +47,7 @@
       </button>
     </div>
     <div class="search-container">
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search orders..." />&nbsp;&nbsp;&nbsp;
       <button (click)="searchOrders()">Search</button>
     </div>
     <div class="sort-buttons">
@@ -60,21 +62,23 @@
       </div>
     <table>
         <tr>
+          <th>Order No.</th>
           <th>Product Name</th>
           <th>Quantity</th>
           <th>Status</th>
           <th>Order Date</th>
           <th>Ordered By</th>
-          <th>Delivery Address</th>
+          <th>Shipping Address</th>
           <th>Actions</th>
         </tr>
         <tr *ngFor="let order of sortedOrders">
+          <td>{{ order.order_number }}</td>
           <td>{{ order.product_name }}</td>
           <td>{{ order.quantity }}</td>
           <td>{{ order.status }}</td>
           <td>{{ formatOrderDate(order.order_date) }}</td>
           <td>{{ order.name }}</td>
-          <td>Upcoming feature‼️</td>
+          <td>{{ order.address }}</td>
           <td>
             <button *ngIf="order.status === 'Processing'" (click)="approveOrder(order)" class="approveBTN">Approve</button>
             <button *ngIf="order.status === 'Processing'" (click)="declineOrder(order)" class="deleteBTN">Decline</button>

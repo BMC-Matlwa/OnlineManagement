@@ -23,6 +23,7 @@ export class OrderCartComponent {
   cartEmpty: boolean = false;
   showToast = false;
   shippingAddress: string = '';
+  orderNumber: string = '';
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -123,25 +124,27 @@ export class OrderCartComponent {
       cart: this.cart,
       address: this.shippingAddress
     };
-    
-    this.dataService.checkoutCart(userId).subscribe(
+
+    this.dataService.checkoutCart(purchaseData).subscribe(
       (response) => {
         console.log("Checkout successful:", response);
+        //alert(`Order placed successfully! Your order number is: ${response.orderNumber}`);
         // alert("Purchase successful!");
       // // this.cart = [];
       // this.loadCart(); // Refresh cart
+      this.orderNumber = response.orderNumber; //store  orderNumber
       this.showToast = true;
       // Delay page reload by 10 seconds
-setTimeout(() => {
-  location.reload();
-}, 3000); 
-    setTimeout(() => this.showToast = false, 3000); // Hide after 10 seconds
-    },
-  (error) => {
-    console.error("Checkout failed:", error);
-    alert("Checkout failed. See console for details.");
-  }
-  );
+      setTimeout(() => {
+        location.reload();
+      }, 3000); 
+          setTimeout(() => this.showToast = false, 3000); // Hide after 10 seconds
+          },
+        (error) => {
+          console.error("Checkout failed:", error);
+          alert("Checkout failed. See console for details.");
+        }
+        );
   }
 
   getTotalQuantity(): number {
@@ -237,13 +240,13 @@ setTimeout(() => {
     });
   }
 
-  checkout() {
-    const userId = Number(localStorage.getItem('userId'));
-    this.dataService.checkoutCart(userId).subscribe(response => {
-      console.log("Order placed successfully", response);
-      location.reload(); //reload the whole page
-    });
-  }  
+  // checkout() {
+  //   const userId = Number(localStorage.getItem('userId'));
+  //   this.dataService.checkoutCart(userId).subscribe(response => {
+  //     console.log("Order placed successfully", response);
+  //     location.reload(); //reload the whole page
+  //   });
+  // }  
   
   navigateToDashboard(): void {
     this.router.navigate(['/dashboard']);
