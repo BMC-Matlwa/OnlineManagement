@@ -80,7 +80,8 @@ fetchOrders(): void {
       order.order_number?.toLowerCase().includes(query) ||
       order.product_name?.toLowerCase().includes(query) ||
       order.name?.toLowerCase().includes(query) ||
-      order.address?.toLowerCase().includes(query)
+      order.address?.toLowerCase().includes(query) ||
+      order.status?.toLowerCase().includes(query)
       );
     }
     console.log("Filtered Orders:", this.sortedOrders); // Debugging

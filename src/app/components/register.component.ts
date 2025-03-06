@@ -54,7 +54,7 @@ export class RegisterComponent {
           {
           console.log('User registered successfully:', response);
           alert('Registration successful!');
-          this.router.navigate(['/']);
+          this.router.navigate(['/users-registered']);
           },
           error: (error) => {
             console.error(' Error registering user:', error);

@@ -8,19 +8,12 @@ body {
   
 }
 .container {
-  padding: 50px;  /* Similar to width */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 600px;
+  margin: 70px auto;
+  padding: 40px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #6a11cb, #2575fc); /* Semi-transparent background */
-  backdrop-filter: blur(10px); /* Glassmorphism effect */
-
-  display: flex;
-  flex-direction: column; /* Stack content vertically */
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  text-align: center;
-  height: 600px; 
+  background-color: #f9f9f9;
   margin-top: 150px;
 }
 .container * {
@@ -36,7 +29,7 @@ label {
   width: 80px;
   text-align: right;
   margin-right: 10px;
-  color: #fff;
+  color: black;
 }
 input {
   padding: 5px;

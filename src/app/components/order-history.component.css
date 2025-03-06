@@ -172,12 +172,11 @@ h2 {
   .search-container {
     margin: 20px auto;
     max-width: 800px;
-    width: 80%
+    /* width: 80% */
   }
   .search-container input{
-    width: 83%;
-    
-    max-width: 800px;
+    width: 97%;
+    /* max-width: 800px; */
   }
   
   .product-image {
@@ -311,16 +310,6 @@ h2 {
   } */
   
   
-  .search-container {
-    margin: 20px auto;
-    max-width: 800px;
-    width: 80%
-  }
-  .search-container input{
-    width: 83%;
-    max-width: 800px;
-  }
-
   .Section-container{
     
   margin-left: 370px; /* Same as sidebar width */
@@ -339,7 +328,7 @@ h2 {
   }
   
   .sort-buttons button {
-    background-color: #007bff; /* Primary blue */
+    background-color: #4CAF50; /* Primary blue */
     color: white;
     border: none;
     padding: 8px 14px;
@@ -350,20 +339,11 @@ h2 {
   }
   
   .sort-buttons button:hover {
-    background-color: #0056b3; /* Darker blue */
+    background-color: #28f32e; /* Darker blue */
     transform: scale(1.05);
   }
   
   .sort-buttons button:active {
-    background-color: #003f80;
+    background-color: #28f32e;
     transform: scale(0.98);
-  }
-  .search-container {
-    margin: 20px auto;
-    max-width: 800px;
-    width: 80%
-  }
-  .search-container input{
-    width: 83%;
-    max-width: 800px;
   }

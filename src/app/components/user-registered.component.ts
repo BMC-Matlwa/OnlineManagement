@@ -24,6 +24,20 @@ export class UserRegisteredComponent {
   totalItems: number = this.users.length;
   searchQuery: string = '';
   showToast = false;
+  showAddUserForm: boolean = false;
+  newUser = {
+    name: '',
+    email: '',
+    role: 'User',
+    phone: ''
+  };
+  newItem = {
+    name: '',
+    email: '',
+    role: 'User',
+    phone: '',
+    password: ''
+  };
 
 
   constructor(private dataService: DataService, private router: Router) {}
@@ -136,6 +150,51 @@ get totalPages() {
     user.editMode = false;
   }
 
- 
+  toggleAddUserForm(): void {
+    this.showAddUserForm = !this.showAddUserForm;
+  }
 
+  addUser(): void {
+    if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    const newUserCopy = { ...this.newUser, editMode: false }; // Clone object
+    this.paginatedUsers.push(newUserCopy); // Add to list
+    this.newUser = { name: '', email: '', role: 'User', phone: '' }; // Reset form
+    this.showAddUserForm = false; // Hide form
+  }
+
+  // addProductData() {
+  //     const orderData = {
+  //       name: this.newItem.name,
+  //       email: this.newItem.email,
+  //       role: this.newItem.role,
+  //       phone: this.newItem.phone,
+  //       password: this.newItem.password
+  //     };
+  
+  //     this.dataService.registerUser(orderData).pipe(
+  //       catchError((error) => {
+  //         console.error('Error adding order:', error);
+  //         alert('Failed to add order');
+  //         throw error;
+  //       })
+  //     ).subscribe(
+  //       (response) => {
+  //         console.log('Order added successfully:', response);
+  //         // alert('Order added successfully!');
+  //         // location.reload(); //reload the whole page
+  //         setTimeout(() => {
+  //           location.reload();
+  //         }, 3000); 
+  //             setTimeout(() => this.showToast = false, 3000); // Hide after 3 seconds
+  //         this.newItem = { name: '', email: null, role: null }; // Reset form fields
+  //       }
+  //     );
+  //   }
+
+  navigateToRegister(): void {
+    this.router.navigate(['/register']);
+  }
 }

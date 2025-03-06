@@ -17,8 +17,24 @@
     </div>
     
     <div class="search-container">
-      <button>Add User(static)</button>
+      <button (click)="navigateToRegister()">Add User(redirect)</button> &nbsp;
+      <button (click)="toggleAddUserForm()" class="addBTN">Add User(static)</button>
   </div>
+  <!-- Add User Button -->
+
+<!-- Add User Form -->
+<div *ngIf="showAddUserForm">
+  <input type="text" [(ngModel)]="newUser.name" placeholder="Name" required />
+  <input type="email" [(ngModel)]="newUser.email" placeholder="Email" required />
+  <select [(ngModel)]="newUser.role">
+    <option value="User">User</option>
+    <option value="Admin">Admin</option>
+    <option value="Inactive">Deactivate</option>
+  </select>
+  <input type="text" [(ngModel)]="newUser.phone" placeholder="Phone" required />
+  <button (click)="addUser()">Save</button>
+  <button (click)="toggleAddUserForm()">Cancel</button>
+</div>
 
     <table>
       <thead>
@@ -69,3 +85,27 @@
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
   </div>
   </div>
+  <!-- <section class="Section-container">
+    
+    <h2>Add New Product</h2>
+    <form (ngSubmit)="addProductData()">
+      <label for="name">Product Name:</label>
+      <input [(ngModel)]="newItem.name" name="name" required />
+
+      <label for="stock">Quantity:</label>
+      <input [(ngModel)]="newItem.stock" name="stock" type="number" required />
+
+      <label for="price">Price:</label>
+      <input [(ngModel)]="newItem.price" name="price" type="number" required />
+
+      <label for="description">Description:</label>
+      <input [(ngModel)]="newItem.description" name="description" required />
+
+      <label for="image">Image</label>
+      <input type="text" [(ngModel)]="newItem.image_url" placeholder="*Enter image URL" name="image">
+
+
+      <button type="submit" style="background-color: #4CAF50; color: white;">Add Product</button>
+    </form>
+  </section> -->
+  

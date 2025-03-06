@@ -46,9 +46,13 @@
           </svg>
       </button>
     </div>
-    <div class="search-container">
+    <!-- <div class="search-container">
       <input type="text" [(ngModel)]="searchQuery" placeholder="Search orders..." />&nbsp;&nbsp;&nbsp;
       <button (click)="searchOrders()">Search</button>
+    </div> -->
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Type to search for orders..." (input)="searchOrders()" />
+      <!-- The search method is triggered on input, so no need for a button click -->
     </div>
     <div class="sort-buttons">
         <label><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">

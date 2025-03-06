@@ -12,9 +12,13 @@
 <section class="Section-container">
   <h2>View and Add Products</h2>
     <!-- Search Bar -->
-<div class="search-container">
+<!-- <div class="search-container">
     <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
     <button (click)="searchProducts()">Search</button>
+  </div> -->
+  <div class="search-container">
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Type to search for products..." (input)="searchProducts()" />
+    <!-- The search method is triggered on input, so no need for a button click -->
   </div>
     <table border="1">
         <tr>
