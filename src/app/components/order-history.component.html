@@ -4,7 +4,7 @@
   <input type="text" [(ngModel)]="searchQuery" placeholder="Search products..." />&nbsp;&nbsp;&nbsp;
   <button (click)="searchOrders()">Search</button>
 </div> -->
-
+<!-- <h2>Orders</h2> -->
 <section *ngIf="userRole === 'user'" class="Section-container">
   <h2>Your Orders</h2>
     <div *ngFor="let orderDate of groupedOrders | keyvalue: sortByDescending">
@@ -51,7 +51,7 @@
       <button (click)="searchOrders()">Search</button>
     </div> -->
     <div class="search-container">
-      <input type="text" [(ngModel)]="searchQuery" placeholder="Type to search for orders..." (input)="searchOrders()" />
+      <input type="text" [(ngModel)]="searchQuery" placeholder="🔍Type to search for orders..." (input)="searchOrders()" />
       <!-- The search method is triggered on input, so no need for a button click -->
     </div>
     <div class="sort-buttons">
@@ -75,7 +75,8 @@
           <th>Shipping Address</th>
           <th>Actions</th>
         </tr>
-        <tr *ngFor="let order of sortedOrders">
+        <tr *ngFor="let order of sortedOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+          <!-- <tr *ngFor="let order of sortedOrders"> -->
           <td>{{ order.order_number }}</td>
           <td>{{ order.product_name }}</td>
           <td>{{ order.quantity }}</td>
@@ -89,8 +90,12 @@
           </td>
         </tr>
     </table>
-    <br>
     
+    <div class="pagination2">
+      <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+    <br>
+
 </section>
 <div *ngIf="userRole === 'admin'" class="order-sum-container">
     <div class="approved-orders-div">

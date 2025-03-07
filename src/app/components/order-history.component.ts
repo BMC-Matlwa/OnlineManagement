@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { NavbarComponent } from '../components/navbar.component'; 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-order-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, NgxPaginationModule],
   templateUrl: './order-history.component.html',
   styleUrl: './order-history.component.css'
 })
@@ -32,6 +33,11 @@ export class OrderHistoryComponent implements OnInit{
   sortDirection: 'asc' | 'desc' = 'asc'; // Sorting or
   searchQuery: string = '';
   data: any[] = []; // Array to hold fetched data
+  currentPageOrders = 1;
+  itemsPerPageOrders = 7; 
+  totalItemsOrders: number = this.sortedOrders.length
+  p: number = 1; // Current page number
+  itemsPerPage: number = 7; // Items per page
 
   constructor(private dataService: DataService, private router: Router) {}
   
@@ -47,6 +53,7 @@ export class OrderHistoryComponent implements OnInit{
       this.orders = response;
     });
     this.groupedOrders = this.groupOrdersByDate(this.orders);
+    this.totalItemsOrders = this.sortedOrders.length;
 }
 
 fetchOrders(): void {
@@ -272,6 +279,7 @@ fetchOrders(): void {
       this.sortDirection = 'asc';
     }
     this.sortOrders();
+    this.currentPageOrders = 1; // Reset to first page after sorting
   }
   
     calculateSumOfApprovedOrders(): void {
@@ -298,6 +306,7 @@ fetchOrders(): void {
   
           this.updateProductQuantity(order.product_name, order.quantity);
           console.log('Product_Name:', order.product_name);
+          console.log('order.stock:', order.stock);
         },
         (error) => {
           console.error('Error approving order:', error);
@@ -398,13 +407,15 @@ fetchOrders(): void {
   
     // Convert table to PDF format
     autoTable(doc, {
-      head: [['Product Name', 'Quantity', 'Status', 'Order Date', 'Ordered By']],
+      head: [['Order No.', 'Product Name', 'Quantity', 'Status', 'Order Date', 'Ordered By', 'Shipping Address']],
       body: this.orders.map(order => [
+        order.order_number,
         order.product_name,
         order.quantity,
         order.status,
         this.formatOrderDate(order.order_date),
-        order.name
+        order.name,
+        order.address
       ]),
       startY: 35, // Ensure the table starts after the order summary
     });
@@ -424,4 +435,32 @@ fetchOrders(): void {
       // Save the PDF
       doc.save(`orders_${currentDate.replace(/\//g, '-')}.pdf`);
     }
+
+    // Get paginated orders
+    get paginatedOrders() {
+      const sorted = this.sortedOrders; // Assuming sortedOrders is updated when sorting changes
+      const start = (this.currentPageOrders - 1) * this.itemsPerPageOrders;
+      const end = this.currentPageOrders * this.itemsPerPageOrders;
+      return sorted.slice(start, end);
+    }
+    
+
+// Next page
+nextPageOrders() {
+  if (this.currentPageOrders < this.totalPagesOrders) {
+    this.currentPageOrders++;
+  }
+}
+
+// Previous page
+previousPageOrders() {
+  if (this.currentPageOrders > 1) {
+    this.currentPageOrders--;
+  }
+}
+
+// Get total pages
+get totalPagesOrders() {
+  return Math.ceil(this.totalItemsOrders / this.itemsPerPageOrders);
+}
 }

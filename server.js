@@ -570,7 +570,7 @@ app.post('/api/place-order', async (req, res) => {
 app.get('/api/orders', async (req, res) => { //used when you click the purchase button
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.order_date ASC;');
+    const result = await client.query('SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.order_date desc;');
     client.release();
     
     if (result.rows.length === 0) {
@@ -935,34 +935,47 @@ app.post('/api/checkout/', async (req, res) => {
 
 app.post('/api/checkout/:id', async (req, res) => {
   const { userId, address } = req.body;
-  console.log("Received userId:", userId, "Address:", address); // Debugging
-  console.log("Checkout request received for user_id:", userId, "Address:", address);
-  
-  //generate order number
-  const today = new Date();
-  const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
-  const randomTwoDigits = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-  const orderNumber = `BMC${formattedDate}${randomTwoDigits}`;
+  console.log("Received userId:", userId, "Address:", address);
 
-  console.log("Generated Order Number:", orderNumber);
+  let orderNumber;
+  let isUnique = false;
 
   try {
-      const result = await pool.query(
-          `INSERT INTO orders (user_id, product_name, quantity, price, status, address, order_number) 
-          SELECT c.user_id, p.name, c.quantity, p.price, 'Processing', $2, $3  
-          FROM cart c 
-          JOIN products p ON c.product_id = p.id 
-          WHERE c.user_id = $1 AND c.status = 'Pending Checkout'`,
-          [userId, address,orderNumber]
-      );
-      console.log("Order Inserted:", result.rowCount);
+    while (!isUnique) {
+      // Generate order number
+      const today = new Date();
+      const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+      const randomTwoDigits = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+      orderNumber = `BMC${formattedDate}${randomTwoDigits}`;
 
-      await pool.query(
-          "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
-          [userId]
-      );
+      // Check if order number already exists
+      const checkResult = await pool.query("SELECT COUNT(*) FROM orders WHERE order_number = $1", [orderNumber]);
+      if (parseInt(checkResult.rows[0].count) === 0) {
+        isUnique = true; // Order number is unique, proceed
+      } else {
+        console.log("Duplicate order number detected, regenerating...");
+      }
+    }
 
-      // Fetch user email
+    console.log("Generated Unique Order Number:", orderNumber);
+
+    const result = await pool.query(
+      `INSERT INTO orders (user_id, product_name, quantity, price, status, address, order_number) 
+      SELECT c.user_id, p.name, c.quantity, p.price, 'Processing', $2, $3  
+      FROM cart c 
+      JOIN products p ON c.product_id = p.id 
+      WHERE c.user_id = $1 AND c.status = 'Pending Checkout'`,
+      [userId, address, orderNumber]
+    );
+
+    console.log("Order Inserted:", result.rowCount);
+
+    await pool.query(
+      "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
+      [userId]
+    );
+
+    // Fetch user email
     const userResult = await pool.query("SELECT email, name FROM users WHERE id = $1", [userId]);
     if (userResult.rows.length === 0) {
       console.error("User email not found.");
@@ -973,84 +986,64 @@ app.post('/api/checkout/:id', async (req, res) => {
 
     // Send Confirmation Email
     await sendOrderConfirmationEmail(userEmail, orderNumber, address, userN);
-    // sendOrderConfirmationEmail(userId, orderNumber);
-    console.log(userEmail, orderNumber, address); // Ensure they are not undefined
-      //Get user email
-      // const userResult = await pool.query(
-      //   "SELECT email, name FROM users WHERE id = $1",
-      //   [userId]
-      // );
-      // const userEmail = userResult.rows[0].email;
 
-      // Send email to user
-      // sendEmail(userEmail, "Success! BMC online order confirmation", `Your order ${orderNumber} has been placed successfully.`);
-
-       // Send email to admin
-      // sendEmail("deviieydevendranath@gmail.com", "New Order Alert", `New order ${orderNumber} has been placed by User ID: ${username}.`);
-
-
-      res.status(200).json({ message: "Order placed successfully", orderNumber });
+    res.status(200).json({ message: "Order placed successfully", orderNumber });
   } catch (error) {
-      console.error("Checkout Error:", error);
-      res.status(500).json({ error: error.message });
+    console.error("Checkout Error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-
 // app.post('/api/checkout/:id', async (req, res) => {
-//   const { user_id, address } = req.body;
-//   console.log("Received user_id:", user_id, "Address:", address); // Debugging
+//   const { userId, address } = req.body;
+//   console.log("Received userId:", userId, "Address:", address); // Debugging
+//   console.log("Checkout request received for user_id:", userId, "Address:", address);
+  
+//   //generate order number
+//   const today = new Date();
+//   const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+//   const randomTwoDigits = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+//   const orderNumber = `BMC${formattedDate}${randomTwoDigits}`;
+
+//   console.log("Generated Order Number:", orderNumber);
 
 //   try {
-//       // Move cart items to orders table with status 'Processing'
 //       const result = await pool.query(
-//           "INSERT INTO orders (user_id, product_name, quantity, price, status, address) SELECT c.user_id, p.name, c.quantity, p.price, 'Processing', $2 FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1 AND c.status = 'Pending Checkout'",[user_id, address]
+//           `INSERT INTO orders (user_id, product_name, quantity, price, status, address, order_number) 
+//           SELECT c.user_id, p.name, c.quantity, p.price, 'Processing', $2, $3  
+//           FROM cart c 
+//           JOIN products p ON c.product_id = p.id 
+//           WHERE c.user_id = $1 AND c.status = 'Pending Checkout'`,
+//           [userId, address,orderNumber]
 //       );
-//       console.log("Insert result:", result); // Debugging
+//       console.log("Order Inserted:", result.rowCount);
 
-//       // Remove checked-out items from cart
-//        const updateResult = await pool.query(
-//           "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
-//           [user_id]
-//       );
-//       console.log("Update result:", updateResult); // Debugging
-
-//       res.status(200).json({ message: "Order placed successfully" });
-//   } catch (error) {
-//     console.error("Checkout Error:", error);
-//       res.status(500).json({ error: error.message });
-//   }
-// });
-
-// app.post('/api/checkout/:id', async (req, res) => {
-//   const { id } = req.params; // Get user_id from URL
-//   try {
-//       console.log(`Processing checkout for user_id: ${id}`);
-
-//       // Move cart items to orders
 //       await pool.query(
-//           `INSERT INTO orders (user_id, product_name, quantity, price, status)
-//            SELECT c.user_id, p.name, c.quantity, p.price, 'Processing'
-//            FROM cart c 
-//            JOIN products p ON c.product_id = p.id 
-//            WHERE c.user_id = $1 AND c.status = 'Pending Checkout'`,
-//           [id]
+//           "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout';",
+//           [userId]
 //       );
 
-//       // Update cart status
-//       const updateResult = await pool.query(
-//           "UPDATE cart SET status = 'Checked Out' WHERE user_id = $1 AND status = 'Pending Checkout' RETURNING *;",
-//           [id]
-//       );
+//       // Fetch user email
+//     const userResult = await pool.query("SELECT email, name FROM users WHERE id = $1", [userId]);
+//     if (userResult.rows.length === 0) {
+//       console.error("User email not found.");
+//       return res.status(400).json({ error: "User email not found." });
+//     }
+//     const userEmail = userResult.rows[0].email;
+//     const userN = userResult.rows[0].name;
 
-//       console.log("Updated cart status:", updateResult.rowCount);
+//     // Send Confirmation Email
+//     await sendOrderConfirmationEmail(userEmail, orderNumber, address, userN);
+//     // sendOrderConfirmationEmail(userId, orderNumber);
+//     console.log(userEmail, orderNumber, address); // Ensure they are not undefined
 
-//       res.status(200).json({ message: "Order placed successfully" });
+//       res.status(200).json({ message: "Order placed successfully", orderNumber });
 //   } catch (error) {
-//       console.error("Checkout error:", error);
+//       console.error("Checkout Error:", error);
 //       res.status(500).json({ error: error.message });
 //   }
 // });
+
 
 
 //Order-cart.component end----------------------------------------------------

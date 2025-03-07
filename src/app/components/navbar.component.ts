@@ -123,6 +123,9 @@ export class NavbarComponent implements OnInit {
   goToDashboard(tab: string): void {
     this.router.navigate(['/dashboard'], { queryParams: { tab } });
   }
+  goToAnalysis(): void {
+    window.location.href = '/analysis';
+  }
   // getTotalQuantity(): number {
   //   return this.orders.reduce((total, order) => total + order.quantity, 0);
   // }

@@ -13,12 +13,12 @@
   
   .chart-box {
     width: 40%;
-    min-width: 500px;
+    min-width: 400px;
   }
   
   canvas {
     width: 100% !important;
-    height: 450px !important;
+    height: 400px !important;
   }
   
   .chart-box-orders {

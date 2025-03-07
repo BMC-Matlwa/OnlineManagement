@@ -33,6 +33,7 @@
     "jspdf-autotable": "^5.0.2",
     "mongoose": "^8.10.1",
     "ng2-charts": "^3.0.1",
+    "ngx-pagination": "^6.0.3",
     "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
     "pg-hstore": "^2.3.4",

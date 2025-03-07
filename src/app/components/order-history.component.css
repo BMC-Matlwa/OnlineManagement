@@ -3,7 +3,7 @@ h2 {
     color: #4CAF50; /* Green color */
     font-size: 2em;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
   }
   
   table {
@@ -312,7 +312,8 @@ h2 {
   
   .Section-container{
     
-  margin-left: 370px; /* Same as sidebar width */
+  margin-left: 380px; /* Same as sidebar width */
+  /* margin-bottom: 10050px; */
   }
 
   .sort-buttons {
@@ -347,3 +348,55 @@ h2 {
     background-color: #28f32e;
     transform: scale(0.98);
   }
+
+  .pagination2 {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    color: #4CAF50;
+}
+
+.pagination2 pagination-controls {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    color: #4CAF50;
+}
+
+.current{
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  color: #4CAF50;
+}
+.ngx-pagination2 button {
+    padding: 5px 10px;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #4CAF50;
+}
+
+.pagination2 button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination2 span {
+    align-self: center;
+}
+
+::ng-deep .ngx-pagination .current {
+  background-color: #4CAF50 !important; /* Green background */
+  color: white !important; /* White text */
+  font-weight: bold;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+::ng-deep .ngx-pagination .pagination-next :hover {
+  background-color: #4CAF50 !important; /* Green background */
+  color: white !important; /* White text */
+  font-weight: bold;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
