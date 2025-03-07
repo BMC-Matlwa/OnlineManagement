@@ -181,8 +181,63 @@ router.post("/reset-password", async (req, res) => {
     const mailOptions = {
       from: "deviieydevendranath@gmail.com",
       to: email,
-      subject: "Password Reset",
-      text: `Click the link to reset your password: http://localhost:4200/reset-password/${token}`,
+      subject: "BMC-Online Password Reset",
+      html: `
+      <p>Your request for password reset was succesful.</p>
+      <p>Click the link to reset your password: <a href="http://localhost:4200/reset-password/${token}" style="color: blue; text-decoration: underline;">Reset Password</a></p>
+      <p>Please ignore if you did not request for a reset. <p>
+      <p>Regards, <br> BMC Online.</p>
+      `,
+    };
+    console.log("Sending password reset email to:", email);
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Password reset link sent!" });
+
+  } catch (error) {
+    console.error("Error resetting password:", error);  // Log the error to console
+    res.status(500).json({ message: "Server error", error: error.message });  // Send detailed error in response
+  }
+});
+
+//reset for new user
+router.post("/reset-NewUser", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if user exists
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userNew = userCheck.name;
+
+    // Generate a token (valid for 1 hour)
+    const token = jwt.sign({ email }, "your_jwt_secret", { expiresIn: "1h" });
+
+    // Save token to the database
+    await pool.query("UPDATE users SET reset_token = $1 WHERE email = $2", [token, email]);
+
+    // Send email with reset link
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "deviieydevendranath@gmail.com",
+        pass: "kldu rwun zuyr wylt",
+      },
+    });
+
+    const mailOptions = {
+      from: "deviieydevendranath@gmail.com",
+      to: email,
+      subject: "New User Alert‼️",
+      html: `
+    <p>Good News!</p>
+    <p>Admin has created an account for you with your email address as the username.</p>
+    <p>To access your account, please click the link below to reset your password:</p>
+    <p><a href="http://localhost:4200/reset-password/${token}" style="color: blue; text-decoration: underline;">Reset Password</a></p>
+    <p>Regards,<br>BMC Online.</p>
+  `,
     };
     console.log("Sending password reset email to:", email);
 
@@ -738,7 +793,7 @@ app.post('/api/register', async (req, res) => {
     client.release();
 
      // Send Welcome Email
-     await sendWelcomeEmail(email, name);
+    //  await sendWelcomeEmail(email, name);
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -780,7 +835,7 @@ app.post('/api/register', async (req, res) => {
     client.release();
 
      // Send Welcome Email
-     await sendWelcomeEmail(email, name);
+    //  await sendWelcomeEmail(email, name);
 
     res.status(201).json({
       message: 'User registered successfully',

@@ -29,7 +29,8 @@ export class UserRegisteredComponent {
     name: '',
     email: '',
     role: 'User',
-    phone: ''
+    phone: '',
+     password: 'Password123'
   };
   newItem = {
     name: '',
@@ -38,6 +39,8 @@ export class UserRegisteredComponent {
     phone: '',
     password: ''
   };
+  isAddingUser = false; 
+  message: string = '';
 
 
   constructor(private dataService: DataService, private router: Router) {}
@@ -159,11 +162,107 @@ get totalPages() {
       alert("Please fill in all fields.");
       return;
     }
+  
     const newUserCopy = { ...this.newUser, editMode: false }; // Clone object
-    this.paginatedUsers.push(newUserCopy); // Add to list
-    this.newUser = { name: '', email: '', role: 'User', phone: '' }; // Reset form
-    this.showAddUserForm = false; // Hide form
+    this.paginatedUsers.unshift(newUserCopy); // Add new user at the top
+    this.newUser = { name: '', email: '', role: 'User', phone: '',  password: 'Password123' }; // Reset input fields
   }
+
+  // Show input row when "Add User" is clicked
+showAddUserRow(): void {
+  this.isAddingUser = true;
+}
+
+// Save new user and insert into the table
+saveNewUser(): void {
+  if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  this.dataService.registerUser(this.newUser).subscribe({
+    next: (response: any) => {
+      console.log('User registered successfully:', response);
+      alert('Registration successful!');
+
+      // Send reset password email
+      this.dataService.resetNewUser(this.newUser.email).subscribe(
+        (resetResponse) => {
+          console.log('Reset password email sent:', resetResponse);
+          alert('A password reset email has been sent.');
+        },
+        (resetError) => {
+          console.error('Error sending reset email:', resetError);
+          alert('Error sending reset email.');
+        }
+      );
+
+      // Add user to the UI list
+      const newUserCopy = { ...this.newUser, editMode: false };
+      this.paginatedUsers.unshift(newUserCopy);
+
+      // Reset form fields
+      this.newUser = { name: '', email: '', role: 'User', phone: '',  password: 'Password123' };
+      this.isAddingUser = false;
+
+      // Navigate to users list
+      this.router.navigate(['/users-registered']);
+      location.reload();
+    },
+    error: (error) => {
+      console.error('Error registering user:', error);
+      
+      // Handle duplicate email error
+      if (error.status === 400 && error.error.message.includes('already exists')) {
+        alert('Email already exists. Please use a different email.');
+      } else {
+        alert('Registration failed. Please try again.');
+      }
+    }
+  });
+}
+
+// saveNewUser(): void {
+//   if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
+//     alert("Please fill in all fields.");
+//     return;
+//   }
+
+//   this.dataService.registerUser(this.newUser)
+//       .subscribe
+//       ({
+//         next: (response: any) => 
+//           {
+//           console.log('User registered successfully:', response);
+//           alert('Registration successful!');
+//           this.router.navigate(['/users-registered']);
+//           },
+//           error: (error) => {
+//             console.error(' Error registering user:', error);
+            
+//             //  Handle duplicate email error
+//             if (error.status === 400 && error.error.message.includes(' already exists')) {
+//               alert('Email already exists. Please use a different email.');
+//             } else {
+//               alert('Email already exists. Please use a different email.');
+//             }
+//           }
+//       });
+
+//   this.dataService.resetPassword1(this.newUser.email).subscribe(
+//     response => this.message = response.message,
+//     error => this.message = "Error sending reset email"
+//   );
+//   const newUserCopy = { ...this.newUser, editMode: false }; // Clone user object
+//   this.paginatedUsers.unshift(newUserCopy); // Add new user at the top
+//   this.newUser = { name: '', email: '', role: 'User', phone: '' }; // Reset input fields
+//   this.isAddingUser = false; // Hide input row
+// }
+
+// Cancel adding a new user
+cancelAddUser(): void {
+  this.isAddingUser = false;
+}
 
   // addProductData() {
   //     const orderData = {

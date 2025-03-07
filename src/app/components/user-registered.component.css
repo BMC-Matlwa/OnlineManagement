@@ -52,6 +52,10 @@ table {
     margin-top : 10px;
   }
 
+  .addBTN{
+    margin-left: 1070px;
+  }
+
   .pagination {
     display: flex;
     justify-content: center;
@@ -76,8 +80,8 @@ table {
   
   .search-container {
     margin: 20px auto;
-    max-width: 832px;
-    width: 90%
+    max-width: 800px;
+    width: 80%
   }
   .search-container input{
     width: 85%;

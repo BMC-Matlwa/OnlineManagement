@@ -105,6 +105,10 @@ export class DataService {
     return this.http.post(`http://localhost:3000/reset-password`, { email });
   }
 
+  resetNewUser(email: string): Observable<any> {
+    return this.http.post(`http://localhost:3000/reset-NewUser`, { email });
+  }
+
   resetPassword(payload: { token: string, newPassword: string }): Observable<any> {
     return this.http.post<any>(`http://localhost:3000/reset-password/confirm`, payload);
   }
