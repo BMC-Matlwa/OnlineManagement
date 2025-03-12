@@ -500,24 +500,84 @@ app.put('/api/users/:id', (req, res) => { //for user updating
   });
 });
 
-app.put('/api/user/:id', (req, res) => { //for admin updating
-  const userId = req.params.id;
-  const { name, email, phone, address, gender, dob, role } = req.body;
+app.put('/api/user/:id', async (req, res) => {
+  try {
+    console.log("Request Body:", req.body); // Debugging
+    console.log("User ID:", req.params.id); // Debugging
 
-  const query = `
+    const userId = req.params.id;
+    // const updated_by = req.user?.id; 
+    
+    console.log("Changed role's userId:", userId);
+    
+    
+    const { name, email, phone, address, gender, dob, role, created_by, updated_by } = req.body; 
+    console.log("Admin's userId:", created_by); //using the id read on the table. wrong!
+    console.log("Updated by'S userId:", updated_by);
+    
+    if (!updated_by) {
+      return res.status(403).json({ error: "Missing updated_by (logged-in user ID)"  });
+    }
+    const client = await pool.connect();
+
+    // Step 1: Get the old role before updating
+    const oldRoleQuery = `SELECT role FROM users WHERE id = $1;`;  // Ensure column name is correct
+    const oldRoleResult = await client.query(oldRoleQuery, [userId]);
+
+    
+    if (oldRoleResult.rows.length === 0) {
+      client.release();
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const old_role = oldRoleResult.rows[0].role;
+
+    // Step 2: Update the user details
+    const updateQuery = `
     UPDATE users
-    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, role = $8
-    WHERE id = $7
+    SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, role = $7, updated_by = $9
+    WHERE id = $8 RETURNING *;
   `;
-  const values = [name, email, phone, address, gender, dob, userId, role] ;
+  const values = [name, email, phone, address, gender, dob, role, userId, updated_by];
+    const result = await client.query(updateQuery, values);
 
-  pool.query(query, values)
-  .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
-  .catch((error) => {
+    // Step 3: Log role changes in users_audit
+    if (old_role !== role) {
+      const auditQuery = `
+        INSERT INTO users_audit (user_id, changed_by, action, old_role, new_role, changed_at)
+        VALUES ($1, $2, 'Role Changed', $3, $4, NOW());
+      `;
+      await client.query(auditQuery, [userId, updated_by, old_role, role]);
+    }
+
+    client.release();
+    res.status(200).json({ message: "User details updated successfully!", user: result.rows[0] });
+
+  } catch (error) {
     console.error('Error updating user details:', error);
     res.status(500).json({ error: 'Error updating user details' });
-  });
+  }
 });
+
+
+// app.put('/api/user/:id', (req, res) => { //for admin updating
+//   const userId = req.params.id;
+//   const { name, email, phone, address, gender, dob, role } = req.body;
+
+//   const query = `
+//     UPDATE users
+//     SET name = $1, email = $2, phone = $3, address = $4, gender = $5, dob = $6, role = $8
+//     WHERE id = $7
+//   `;
+//   const values = [name, email, phone, address, gender, dob, userId, role] ;
+
+//   pool.query(query, values)
+//   .then(() => res.json({ message: 'User details updated successfully' }))  // Return a JSON response
+//   .catch((error) => {
+//     console.error('Error updating user details:', error);
+//     res.status(500).json({ error: 'Error updating user details' });
+//   });
+// });
 
 app.get('/api/users', (req, res) => {
   const query = 'SELECT * FROM users order by id asc';
@@ -586,22 +646,61 @@ app.get('/api/orders', async (req, res) => { //used when you click the purchase 
 
 app.put('/api/orders/:id/status', async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, updated_by } = req.body; // Include the user who made the change
     const { id } = req.params;
 
     const client = await pool.connect();
-    const updateQuery = `
-      UPDATE orders SET status = $1 WHERE id = $2 RETURNING *;
-    `;
+
+    // Step 1: Get the old status
+    const oldStatusQuery = `SELECT status FROM orders WHERE id = $1;`;
+    const oldStatusResult = await client.query(oldStatusQuery, [id]);
+
+    if (oldStatusResult.rows.length === 0) {
+      client.release();
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const old_status = oldStatusResult.rows[0].status;
+
+    // Step 2: Update the order status
+    const updateQuery = `UPDATE orders SET status = $1 WHERE id = $2 RETURNING *;`;
     const result = await client.query(updateQuery, [status, id]);
+
+    // Step 3: Insert the change into the orders_audit table
+    const auditQuery = `
+      INSERT INTO orders_audit (order_id, changed_by, old_status, new_status, changed_at)
+      VALUES ($1, $2, $3, $4, NOW());
+    `;
+    await client.query(auditQuery, [id, updated_by, old_status, status]);
 
     client.release();
     res.status(200).json(result.rows[0]);
+
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+// app.put('/api/orders/:id/status', async (req, res) => {
+//   try {
+//     const { status } = req.body;
+//     const { id } = req.params;
+
+//     const client = await pool.connect();
+//     const updateQuery = `
+//       UPDATE orders SET status = $1 WHERE id = $2 RETURNING *;
+//     `;
+//     const result = await client.query(updateQuery, [status, id]);
+
+//     client.release();
+//     res.status(200).json(result.rows[0]);
+//   } catch (error) {
+//     console.error('Error updating order status:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 
 
 // Update order status (Admin)
@@ -763,79 +862,124 @@ app.get('/api/products/name/:productName', async (req, res) => {
 //register.component -----------------------------------------------------------
 app.use(bodyParser.json()); 
 
-const ADMIN_KEY = 'adminKey123';  // Replace with a secure key
+// const ADMIN_KEY = 'adminKey123';  // Replace with a secure key
+
+// app.post('/api/register', async (req, res) => {
+//   try {
+//     console.log('Request body:', req.body);
+//     const { name, email, password, role, key } = req.body;
+
+//     if (!role) {
+//       console.error('Role is missing!');
+//     }
+
+//     const client = await pool.connect();
+
+//     let assignedRole = 'user'; // Default role is 'user'
+
+//     // Check if the provided key matches the admin key
+//     if (role === 'admin' && key === ADMIN_KEY) {
+//       assignedRole = 'admin';
+//     }
+
+//     const insertQuery = `
+//       INSERT INTO users (name, email, password, role) 
+//       VALUES ($1, $2, $3, $4) 
+//       RETURNING *`;
+
+//     const result = await client.query(insertQuery, [name, email, password, assignedRole]);
+
+//     client.release();
+
+//      // Send Welcome Email
+//     //  await sendWelcomeEmail(email, name);
+
+//     res.status(201).json({
+//       message: 'User registered successfully',
+//       user: result.rows[0],
+//     });
+//   } catch (error) {
+//     console.error('Error inserting user:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
+// app.post('/api/register/:id', async (req, res) => {
+//   try {
+//     const { name, email, password, role, created_by } = req.body; // Include who created the user
+//     console.log("Received userId from frontend:", created_by);
+//     const client = await pool.connect();  // Use request body if req.user is missing
+
+//     const existingUser = await client.query("SELECT * FROM users WHERE email = $1", [email]);
+//     if (existingUser.rows.length > 0) {
+//       client.release();
+//       return res.status(400).json({ error: "Email is already registered" });
+//     }
+
+//     let assignedRole = 'user'; // Default role is 'user'
+//     if (role === 'admin' && key === ADMIN_KEY) {
+//       assignedRole = 'admin';
+//     }
+
+//     // Insert and return the inserted user
+//     const insertQuery = `
+//       INSERT INTO users (name, email, password, role, created_by) 
+//       VALUES ($1, $2, $3, $4, $5) 
+//       RETURNING id
+//     `;
+//     const result = await client.query(insertQuery, [name, email, password, assignedRole,  created_by]);
+//     const userid = result.rows[0].id;
+
+//     console.log("userid:", userid);
+//     console.log("insertQuery:", name, email, password, assignedRole,  created_by);
+
+//     // Step 2: Log in users_audit
+//     const auditQuery = `
+//       INSERT INTO users_audit (user_id, changed_by, action, old_role, new_role, changed_at)
+//       VALUES ($1, $2, 'Added', NULL, $3, NOW());
+//     `;
+//     await client.query(auditQuery, [userid, created_by, assignedRole]);
+//     console.log("auditQuery:", userid, created_by, assignedRole);
+
+//     client.release();
+
+//     res.status(201).json({
+//       message: 'User registered successfully', 
+//       user: result.rows[0]
+//       // user: { id, name, email, role: assignedRole, createdBy },
+//     });
+//   } catch (error) {
+//     console.error("Error inserting user:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.post('/api/register', async (req, res) => {
   try {
-    console.log('Request body:', req.body);
-    const { name, email, password, role, key } = req.body;
-
-    if (!role) {
-      console.error('Role is missing!');
-    }
-
+    const { name, email, password, role, key, created_by } = req.body;
     const client = await pool.connect();
 
-    let assignedRole = 'user'; // Default role is 'user'
+    // Check if the email already exists
+    const existingUser = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
-    // Check if the provided key matches the admin key
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Email is already registered" });
+    }
+
+    let assignedRole = 'user'; // Default role is 'user'
     if (role === 'admin' && key === ADMIN_KEY) {
       assignedRole = 'admin';
     }
 
+    // Insert user with created_by
     const insertQuery = `
-      INSERT INTO users (name, email, password, role) 
-      VALUES ($1, $2, $3, $4) 
-      RETURNING *`;
-
-    const result = await client.query(insertQuery, [name, email, password, assignedRole]);
-
-    client.release();
-
-     // Send Welcome Email
-    //  await sendWelcomeEmail(email, name);
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      user: result.rows[0],
-    });
-  } catch (error) {
-    console.error('Error inserting user:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-app.post('/api/register', async (req, res) => {
-  try {
-    const { name, email, password, role, key } = req.body;
-    const client = await pool.connect();
-
-     // Check if the email already exists
-     const existingUser = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-
-     if (existingUser.rows.length > 0) {
-       return res.status(400).json({ error: "Email is already registered" });
-     }
-
-    let assignedRole = 'user'; // Default role is 'user'
-
-    // Check if the provided key matches the admin key
-    if (role === 'admin' && key === ADMIN_KEY) {
-      assignedRole = 'admin';
-    }
-    // Insert and return the inserted user
-    // Force role to be user
-    const insertQuery = `
-      INSERT INTO users (name, email, password, role) 
-      VALUES ($1, $2, $3, $4) 
+      INSERT INTO users (name, email, password, role, created_by) 
+      VALUES ($1, $2, $3, $4, $5) 
       RETURNING *`;
     
-    const result = await client.query(insertQuery, [name, email, password,assignedRole]);
+    const result = await client.query(insertQuery, [name, email, password, assignedRole, created_by]);
 
     client.release();
-
-     // Send Welcome Email
-    //  await sendWelcomeEmail(email, name);
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -846,6 +990,48 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.post('/api/register', async (req, res) => {
+//   try {
+//     const { name, email, password, role, key } = req.body;
+//     const client = await pool.connect();
+
+//      // Check if the email already exists
+//      const existingUser = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+//      if (existingUser.rows.length > 0) {
+//        return res.status(400).json({ error: "Email is already registered" });
+//      }
+
+//     let assignedRole = 'user'; // Default role is 'user'
+
+//     // Check if the provided key matches the admin key
+//     if (role === 'admin' && key === ADMIN_KEY) {
+//       assignedRole = 'admin';
+//     }
+//     // Insert and return the inserted user
+//     // Force role to be user
+//     const insertQuery = `
+//       INSERT INTO users (name, email, password, role) 
+//       VALUES ($1, $2, $3, $4) 
+//       RETURNING *`;
+    
+//     const result = await client.query(insertQuery, [name, email, password,assignedRole]);
+
+//     client.release();
+
+//      // Send Welcome Email
+//     //  await sendWelcomeEmail(email, name);
+
+//     res.status(201).json({
+//       message: 'User registered successfully',
+//       user: result.rows[0],
+//     });
+//   } catch (error) {
+//     console.error("Error inserting user:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 //register component end---------------------------------------------------
 

@@ -27,6 +27,8 @@
     display: flex;
     align-items: center;
   }
+
+
   
   .menu {
     position: relative;
@@ -246,4 +248,32 @@
   font-weight: bold;
   padding: 3px 6px;
   border-radius: 50%;
+}
+
+.navbar-center {
+  flex: 2; /* Allow center section to be larger */
+  display: flex;
+  justify-content: center; /* Center align the text */
+  overflow: hidden;
+  position: relative;
+}
+
+.welcome-text-container {
+  width: 1530px; /* Adjust width as needed */
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.welcome-text {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  animation: scrollText 30s linear infinite;
+}
+
+@keyframes scrollText {
+  from { transform: translateX(100%); } /* Start from right */
+  to { transform: translateX(-100%); } /* Move to left */
 }

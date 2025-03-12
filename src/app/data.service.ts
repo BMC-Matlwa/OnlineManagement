@@ -92,9 +92,9 @@ export class DataService {
     return this.http.get<any[]>(`http://localhost:3000/api/users`);
   }
   
-  updateUserP(userId: number, userData: any):  Observable<any> {
-    return this.http.put(`http://localhost:3000/api/user/${userId}`, userData);
-  }
+    updateUserP(userId: number, userData: any):  Observable<any> {
+      return this.http.put(`http://localhost:3000/api/user/${userId}`, userData);
+    }
 
   forgotPassword(email: string) { //forgot-password-dialog
     const url = 'http://localhost:3000/api/forgot-password'; // Replace with your actual API endpoint
@@ -149,6 +149,10 @@ export class DataService {
   // }
   checkoutCart(purchaseData: { userId: number; cart: any[]; address: string }) {
     return this.http.post<any>(`http://localhost:3000/api/checkout/${purchaseData.userId}`, (purchaseData));
+  }
+
+  addNewUser(newUser: { name: string; email: string; role: string; phone: string; password: string; created_by: number; }) {
+    return this.http.post(`http://localhost:3000/api/register/${newUser.created_by}`, (newUser));
   }
   
   getUserCart() {

@@ -25,17 +25,28 @@ export class UserRegisteredComponent {
   searchQuery: string = '';
   showToast = false;
   showAddUserForm: boolean = false;
+  userId!: number; // Definite assignment assertion
   newUser = {
     name: '',
     email: '',
-    role: 'User',
+    role: 'user',
     phone: '',
-     password: 'Password123'
+     password: 'Password123',
+     created_by: this.userId
   };
+  updateUser = {
+    name: '',
+    email: '',
+    role: 'user',
+    phone: '',
+     password: 'Password123',
+     updated_by: this.userId
+  };
+  
   newItem = {
     name: '',
     email: '',
-    role: 'User',
+    role: 'user',
     phone: '',
     password: ''
   };
@@ -49,6 +60,8 @@ export class UserRegisteredComponent {
     this.getAllUsers();
     this.totalItems = this.users.length; //totalItems is recalculated when users are initialized.
     console.log('users count:', this.users.length);
+    this.userId = parseInt(localStorage.getItem('userId') || '0', 10); // Retrieve the user ID
+    console.log("Current userId:", this.userId);
   }
 
   getAllUsers(): void {
@@ -134,6 +147,12 @@ get totalPages() {
   }
   
   saveUser(user: any): void {
+    this.updateUser.updated_by = this.userId;
+    const updateId = this.userId; // Get logged-in user ID
+    user.updated_by = updateId; // Attach it to the request body
+
+    console.log("updated_by:", this.userId );
+    
     this.dataService.updateUserP(user.id, user).subscribe(
       () => {
         // alert('User updated successfully!');
@@ -157,16 +176,16 @@ get totalPages() {
     this.showAddUserForm = !this.showAddUserForm;
   }
 
-  addUser(): void {
-    if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
-      alert("Please fill in all fields.");
-      return;
-    }
+  // addUser(): void {
+  //   if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
+  //     alert("Please fill in all fields.");
+  //     return;
+  //   }
   
-    const newUserCopy = { ...this.newUser, editMode: false }; // Clone object
-    this.paginatedUsers.unshift(newUserCopy); // Add new user at the top
-    this.newUser = { name: '', email: '', role: 'User', phone: '',  password: 'Password123' }; // Reset input fields
-  }
+  //   const newUserCopy = { ...this.newUser, editMode: false }; // Clone object
+  //   this.paginatedUsers.unshift(newUserCopy); // Add new user at the top
+  //   this.newUser = { name: '', email: '', role: 'User', phone: '',  password: 'Password123', created_by: this.userId }; // Reset input fields
+  // }
 
   // Show input row when "Add User" is clicked
 showAddUserRow(): void {
@@ -175,37 +194,19 @@ showAddUserRow(): void {
 
 // Save new user and insert into the table
 saveNewUser(): void {
-  if (!this.newUser.name || !this.newUser.email || !this.newUser.phone) {
+  if (!this.newUser.name || !this.newUser.email) {
     alert("Please fill in all fields.");
     return;
   }
+
+  this.newUser.created_by = this.userId; // Ensure created_by is set
+  console.log("Sending user data:", this.newUser);
 
   this.dataService.registerUser(this.newUser).subscribe({
     next: (response: any) => {
       console.log('User registered successfully:', response);
       alert('Registration successful!');
-
-      // Send reset password email
-      this.dataService.resetNewUser(this.newUser.email).subscribe(
-        (resetResponse) => {
-          console.log('Reset password email sent:', resetResponse);
-          alert('A password reset email has been sent.');
-        },
-        (resetError) => {
-          console.error('Error sending reset email:', resetError);
-          alert('Error sending reset email.');
-        }
-      );
-
-      // Add user to the UI list
-      const newUserCopy = { ...this.newUser, editMode: false };
-      this.paginatedUsers.unshift(newUserCopy);
-
-      // Reset form fields
-      this.newUser = { name: '', email: '', role: 'User', phone: '',  password: 'Password123' };
       this.isAddingUser = false;
-
-      // Navigate to users list
       this.router.navigate(['/users-registered']);
       location.reload();
     },

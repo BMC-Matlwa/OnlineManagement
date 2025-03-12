@@ -63,7 +63,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Role</th>
-          <th>Phone</th>
+          <!-- <th>Phone</th> -->
           <th>Actions</th>
         </tr>
       </thead>
@@ -74,12 +74,12 @@
       <td><input type="email" [(ngModel)]="newUser.email" placeholder="Enter email" required /></td>
       <td>
         <select [(ngModel)]="newUser.role">
-          <option value="User">User</option>
-          <option value="Admin">Admin</option>
+          <option value="user">user</option>
+          <option value="admin">Admin</option>
           <option value="Inactive">Deactivate</option>
         </select>
       </td>
-      <td><input type="text" [(ngModel)]="newUser.phone" placeholder="Enter phone" required /></td>
+      <!-- <td><input type="text" [(ngModel)]="newUser.phone" placeholder="Enter phone" required /></td> -->
       <td>
         <button (click)="saveNewUser()">Save</button>
         <button (click)="cancelAddUser()">Cancel</button>
@@ -90,7 +90,7 @@
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.role }}</td>
-          <td>{{ user.phone }}</td>
+          <!-- <td>{{ user.phone }}</td> -->
           <td>
             <button (click)="toggleEdit(user)" class="editBTN">Edit</button>
           </td>
@@ -100,12 +100,12 @@
           <td>{{ user.email }}</td>
           <td>
             <select [(ngModel)]="user.role">
-                <option value="User">User</option>
-              <option value="Admin">Admin</option>
+                <option value="user">User</option>
+              <option value="admin">Admin</option>
               <option value="Inactive">Deactivate</option>
             </select>
         </td>
-        <td>{{ user.phone }}</td>
+        <!-- <td>{{ user.phone }}</td> -->
       
           <td>
             <button (click)="saveUser(user)">Save</button>&nbsp;
