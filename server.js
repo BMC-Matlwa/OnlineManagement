@@ -14,6 +14,7 @@ const { transporter } = require("./src/app/emailService.js"); // Reuse transport
 const { sendWelcomeEmail } = require("./src/app/emailService.js"); //when a user registers, this imports the service used to send the email.
 const { sendEmail } = require("./src/app/emailService.js"); //when a user purchases, this imports the service to send an email to user and Admin that order was received.
 const { sendOrderConfirmationEmail } = require("./src/app/emailService.js"); 
+const { sendEmailNotification } = require("./src/app/emailService.js"); 
 
 const JWT_SECRET = 'your-secret-key';
 
@@ -651,6 +652,25 @@ app.put('/api/orders/:id/status', async (req, res) => {
 
     const client = await pool.connect();
 
+    // Ensure order exists and fetch user email
+    const orderQuery = `
+      SELECT orders.status, orders.order_number, users.email 
+      FROM orders 
+      JOIN users ON orders.user_id = users.id 
+      WHERE orders.id = $1;
+    `;
+    const orderResult = await client.query(orderQuery, [id]);
+
+    if (orderResult.rows.length === 0) {
+      client.release();
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const order = orderResult.rows[0];
+    const old_status = order.status;
+    const userEmail = order.email;
+    const orderNumber = order.order_number;
+
     // Ensure order exists
     const oldStatusQuery = `SELECT status FROM orders WHERE id = $1;`;
     const oldStatusResult = await client.query(oldStatusQuery, [id]);
@@ -670,6 +690,10 @@ app.put('/api/orders/:id/status', async (req, res) => {
     const result = await client.query(updateQuery, [status, updated_by, id]);
 
     client.release();
+
+    // Send email notification
+    await sendEmailNotification(userEmail, orderNumber, status);
+
     res.status(200).json(result.rows[0]);
 
   } catch (error) {
