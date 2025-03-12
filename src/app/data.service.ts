@@ -37,8 +37,14 @@ export class DataService {
     return this.http.get<any[]>('http://localhost:3000/api/orders');
   }
   
-  updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put(`http://localhost:3000/api/orders/${orderId}/status`, { status });
+  // updateOrderStatus(orderId: number, status: string): Observable<any> {
+  //   return this.http.put(`http://localhost:3000/api/orders/${orderId}/status`, { status });
+  // }
+  updateOrderStatus(orderId: number, status: string, updatedBy: number): Observable<any> {
+    return this.http.put(`http://localhost:3000/api/orders/${orderId}/status`, { 
+      status, 
+      updated_by: updatedBy // Include updated_by
+    });
   }
   
   

@@ -83,7 +83,22 @@ async function sendOrderConfirmationEmail(userEmail, orderNumber, address, userN
     console.error("Error sending order confirmation email:", error);
   }
 }
+async function sendEmailNotification(email, orderNumber, newStatus) {
+  try {
 
+    let mailOptions = {
+      from: '"BMC Online Management System" <deviieydevendranath@gmail.com>',
+      to: email,
+      subject: `Order #${orderNumber} Status Update`,
+      text: `Dear Customer,\n\nYour order #${orderNumber} has been updated to: ${newStatus}.\n\nThank you for shopping with us!\n\nBest regards,\nBMC Online Management System Team`
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} for Order #${orderNumber} with status ${newStatus}`);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+}
 
 // function sendOrderConfirmationEmail(userId, orderNumber) {
 //   const userEmail = getUserEmail(userId); // Fetch from DB
@@ -105,3 +120,4 @@ async function sendOrderConfirmationEmail(userEmail, orderNumber, address, userN
 module.exports = { sendWelcomeEmail };
 module.exports = { sendEmail };
 module.exports = { sendOrderConfirmationEmail, transporter};
+module.exports = {sendEmailNotification};

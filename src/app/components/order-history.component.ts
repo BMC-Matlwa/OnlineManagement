@@ -293,46 +293,81 @@ fetchOrders(): void {
     }
   
     approveOrder(order: any): void {
-      // const productName = order.name;
-  
-      this.dataService.updateOrderStatus(order.id, 'Approved').subscribe(
+      const updatedBy = this.userId; // Ensure this.userId is set when the user logs in
+    
+      this.dataService.updateOrderStatus(order.id, 'Approved', updatedBy).subscribe(
         (response) => {
           console.log('Order approved:', response);
-          location.reload(); //reload the whole page
+          location.reload(); // Reload page after update
           order.status = 'Approved';
           console.log(`Updated status to Approved for: ${order.product_name}`);
           this.calculateSumOfApprovedOrders();
-  
-  
           this.updateProductQuantity(order.product_name, order.quantity);
-          console.log('Product_Name:', order.product_name);
-          console.log('order.stock:', order.stock);
         },
         (error) => {
           console.error('Error approving order:', error);
         }
       );
     }
-  
+    
     declineOrder(order: any): void {
-      // const productName = order.name;
-  
-      this.dataService.updateOrderStatus(order.id, 'Declined').subscribe(
+      const updatedBy = this.userId; // Ensure this.userId is set when the user logs in
+    
+      this.dataService.updateOrderStatus(order.id, 'Declined', updatedBy).subscribe(
         (response) => {
           console.log('Order declined:', response);
-          location.reload(); //reload the whole page
+          location.reload();
           order.status = 'Declined';
           this.calculateSumOfApprovedOrders();
-  
-  
           this.updateProductQuantity(order.product_name, order.quantity);
-          console.log('Product_Name:', order.product_name);
         },
         (error) => {
           console.error('Error declining order:', error);
         }
       );
     }
+    
+    // approveOrder(order: any): void {
+    //   // const productName = order.name;
+  
+    //   this.dataService.updateOrderStatus(order.id, 'Approved').subscribe(
+    //     (response) => {
+    //       console.log('Order approved:', response);
+    //       location.reload(); //reload the whole page
+    //       order.status = 'Approved';
+    //       console.log(`Updated status to Approved for: ${order.product_name}`);
+    //       this.calculateSumOfApprovedOrders();
+  
+  
+    //       this.updateProductQuantity(order.product_name, order.quantity);
+    //       console.log('Product_Name:', order.product_name);
+    //       console.log('order.stock:', order.stock);
+    //     },
+    //     (error) => {
+    //       console.error('Error approving order:', error);
+    //     }
+    //   );
+    // }
+  
+    // declineOrder(order: any): void {
+    //   // const productName = order.name;
+  
+    //   this.dataService.updateOrderStatus(order.id, 'Declined').subscribe(
+    //     (response) => {
+    //       console.log('Order declined:', response);
+    //       location.reload(); //reload the whole page
+    //       order.status = 'Declined';
+    //       this.calculateSumOfApprovedOrders();
+  
+  
+    //       this.updateProductQuantity(order.product_name, order.quantity);
+    //       console.log('Product_Name:', order.product_name);
+    //     },
+    //     (error) => {
+    //       console.error('Error declining order:', error);
+    //     }
+    //   );
+    // }
     
     updateProductQuantity(productName: string, orderedQuantity: number): void {
       console.log('Product Name:', productName);
@@ -379,17 +414,17 @@ fetchOrders(): void {
       );
     }
     
-    updateOrderStatus(order: any, status: string): void {
-      this.dataService.updateOrderStatus(order.id, status).subscribe(
-        (response) => {
-          order.status = status;
-          alert(`Order status updated to ${status}`);
-        },
-        (error) => {
-          console.error('Error updating order status:', error);
-        }
-      );
-    }
+    // updateOrderStatus(order: any, status: string): void {
+    //   this.dataService.updateOrderStatus(order.id, status).subscribe(
+    //     (response) => {
+    //       order.status = status;
+    //       alert(`Order status updated to ${status}`);
+    //     },
+    //     (error) => {
+    //       console.error('Error updating order status:', error);
+    //     }
+    //   );
+    // }
   
     downloadPDF() {
       const doc = new jsPDF();
@@ -422,16 +457,16 @@ fetchOrders(): void {
     
     const finalY = (doc as any).lastAutoTable.finalY || 35;
     
-       // Order Summary
-       const summaryY = finalY + 15;
-       doc.setFontSize(14);
-       doc.text('Order Summary:', 14, summaryY);
-       
-       doc.setFontSize(12);
-       doc.text(`Approved Orders: ${this.sumApprovedOrders}`, 14, summaryY + 10);
-       doc.text(`Declined Orders: ${this.sumDeclinedOrders}`, 14, summaryY + 20);
-       doc.text(`Pending Orders: ${this.sumPendingOrders}`, 14, summaryY + 30);
-       doc.text(`Total Orders: ${this.sumAllOrders}`, 14, summaryY + 40);
+      // Order Summary
+      const summaryY = finalY + 15;
+      doc.setFontSize(14);
+      doc.text('Order Summary:', 14, summaryY);
+      
+      doc.setFontSize(12);
+      doc.text(`Approved Orders: ${this.sumApprovedOrders}`, 14, summaryY + 10);
+      doc.text(`Declined Orders: ${this.sumDeclinedOrders}`, 14, summaryY + 20);
+      doc.text(`Pending Orders: ${this.sumPendingOrders}`, 14, summaryY + 30);
+      doc.text(`Total Orders: ${this.sumAllOrders}`, 14, summaryY + 40);
       // Save the PDF
       doc.save(`orders_${currentDate.replace(/\//g, '-')}.pdf`);
     }
