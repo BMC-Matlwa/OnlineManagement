@@ -646,12 +646,12 @@ app.get('/api/orders', async (req, res) => { //used when you click the purchase 
 
 app.put('/api/orders/:id/status', async (req, res) => {
   try {
-    const { status, updated_by } = req.body; // Include the user who made the change
+    const { status, updated_by } = req.body;
     const { id } = req.params;
 
     const client = await pool.connect();
 
-    // Step 1: Get the old status
+    // Ensure order exists
     const oldStatusQuery = `SELECT status FROM orders WHERE id = $1;`;
     const oldStatusResult = await client.query(oldStatusQuery, [id]);
 
@@ -660,18 +660,14 @@ app.put('/api/orders/:id/status', async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    const old_status = oldStatusResult.rows[0].status;
-
-    // Step 2: Update the order status
-    const updateQuery = `UPDATE orders SET status = $1 WHERE id = $2 RETURNING *;`;
-    const result = await client.query(updateQuery, [status, id]);
-
-    // Step 3: Insert the change into the orders_audit table
-    const auditQuery = `
-      INSERT INTO orders_audit (order_id, changed_by, old_status, new_status, changed_at)
-      VALUES ($1, $2, $3, $4, NOW());
+    // Update order status and set updated_by
+    const updateQuery = `
+      UPDATE orders 
+      SET status = $1, updated_by = $2 
+      WHERE id = $3 
+      RETURNING *;
     `;
-    await client.query(auditQuery, [id, updated_by, old_status, status]);
+    const result = await client.query(updateQuery, [status, updated_by, id]);
 
     client.release();
     res.status(200).json(result.rows[0]);
@@ -681,6 +677,7 @@ app.put('/api/orders/:id/status', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 // app.put('/api/orders/:id/status', async (req, res) => {
