@@ -4,17 +4,19 @@ import { NavbarComponent } from '../components/navbar.component';
 import { DataService } from '../data.service'; 
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Chart, ChartData, ChartType, ChartOptions } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 
 
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [NavbarComponent, CommonModule, NgChartsModule],
+  imports: [NavbarComponent, CommonModule, NgChartsModule, FormsModule],
   templateUrl: './admin-analytics.component.html',
   styleUrl: './admin-analytics.component.css'
 })
@@ -160,6 +162,9 @@ export class AdminAnalyticsComponent implements OnInit{
   userChartPlugins = [ChartDataLabels];
   stockChartPlugins = [ChartDataLabels];
 
+ selectedChart: string = ''; // Store user selection
+
+
   constructor(private dataService: DataService,private router: Router ) {}
 
   ngOnInit(): void {
@@ -257,5 +262,40 @@ export class AdminAnalyticsComponent implements OnInit{
 
   productDetails(){
     window.location.href = '/admin';
+  }
+
+  
+  downloadPDF(): void {
+    const chartMap: { [key: string]: string } = {
+      orders: '.orders-chart',
+      users: '.users-chart',
+      stock: '.stock-chart'
+    };
+
+    const chartClass = chartMap[this.selectedChart];
+
+    if (!chartClass) {
+      console.error('No chart selected');
+      return;
+    }
+
+    const DATA = document.querySelector(chartClass);
+
+    if (DATA instanceof HTMLElement) {
+      html2canvas(DATA, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        // pdf.save(`${this.selectedChart}-chart.pdf`);
+        const currentDate = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
+        pdf.save(`${this.selectedChart}-chart-${currentDate}.pdf`);
+
+      });
+    } else {
+      console.error('Element not found or not an HTMLElement');
+    }
   }
 }

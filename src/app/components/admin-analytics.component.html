@@ -2,56 +2,48 @@
 
 <div class="admin-dashboard">
   <h2>Admin Analytics Dashboard</h2>
+ 
+  <div class="downloadPDF">
+  <select [(ngModel)]="selectedChart">
+    <option value="">Select Chart</option>
+    <option value="orders">Orders Overview</option>
+    <option value="users">Registered Users</option>
+    <option value="stock">Stock on Hand</option>
+  </select>
+&nbsp;
+  <button (click)="downloadPDF()" [disabled]="!selectedChart">Download Selected Chart</button>
+</div>
 
-  <div class="charts-container" (click)="orderDetails()">
-    <div class="chart-box">
-      <h3>Orders Overview</h3>
-      <!-- <canvas *ngIf="orderChartData" baseChart 
-        [data]="orderChartData"
-        [type]="orderChartType">
-      </canvas> -->
-
-      <canvas baseChart
-    [data]="orderChartData"
-    [options]="orderChartOptions"  
-    [type]="orderChartType"
-    [plugins]="orderChartPlugins">
-  </canvas>
-    </div>
-
-    <div class="chart-box" (click)="userDetails()">
-      <h3>Registered Users</h3>
-      <!-- <canvas *ngIf="userChartData" baseChart 
-        [data]="userChartData"
-        [type]="userChartType">
-      </canvas> -->
-      <canvas baseChart
-        [data]="userChartData"
-        [options]="userChartOptions"  
-        [type]="userChartType"
-        [plugins]="userChartPlugins">
-  </canvas>
-    </div>
-
-    <div class="chart-box" (click)="productDetails()">
-      <h3>Stock on Hand</h3>
-
-      <!-- <canvas baseChart
-  [data]="stockChartData"
-  [options]="stockChartOptions"
-  [type]="'bar'">
-</canvas> -->
-
-      <!-- <canvas *ngIf="stockChartData" baseChart 
-        [data]="stockChartData"
-        [type]="stockChartType">
-      </canvas> -->
-      <canvas baseChart
-        [data]="stockChartData"
-        [options]="stockChartOptions"  
-        [type]="stockChartType"
-        [plugins]="stockChartPlugins">
-  </canvas>
-    </div>
+  <div class="charts-container">
+  <!-- Assign class names to each chart for identification -->
+  <div class="chart-box orders-chart" (click)="orderDetails()">
+    <h3>Orders Overview</h3>
+    <canvas baseChart
+      [data]="orderChartData"
+      [options]="orderChartOptions"
+      [type]="orderChartType"
+      [plugins]="orderChartPlugins">
+    </canvas>
   </div>
+  
+  <div class="chart-box users-chart" (click)="userDetails()">
+    <h3>Registered Users</h3>
+    <canvas baseChart
+      [data]="userChartData"
+      [options]="userChartOptions"
+      [type]="userChartType"
+      [plugins]="userChartPlugins">
+    </canvas>
+  </div>
+  
+  <div class="chart-box stock-chart" (click)="productDetails()">
+    <h3>Stock on Hand</h3>
+    <canvas baseChart
+      [data]="stockChartData"
+      [options]="stockChartOptions"
+      [type]="stockChartType"
+      [plugins]="stockChartPlugins">
+    </canvas>
+  </div>
+</div>
 </div>

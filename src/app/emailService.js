@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendWelcomeEmail(userEmail, userName) {
   const mailOptions = {
-    from: "deviieydevendranath@gmail.com",
+    from: '"BMC Online Management System" <deviieydevendranath@gmail.com>',
     to: userEmail,
     subject: "Welcome to Our Platform!",
     text: `Welcome to Online Order ${userName},
@@ -29,7 +29,7 @@ async function sendWelcomeEmail(userEmail, userName) {
 function sendEmail(to, subject, message) {
 
   const mailOptions = {
-      from: "deviieydevendranath@gmail.com",
+    from: '"BMC Online Management System" <deviieydevendranath@gmail.com>',
       to,
       subject,
       text: message
@@ -47,7 +47,7 @@ function sendEmail(to, subject, message) {
 // Send Order Confirmation Email
 async function sendOrderConfirmationEmail(userEmail, orderNumber, address, userN) {
   const mailOptions = {
-    from: "deviieydevendranath@gmail.com",
+    from: '"BMC Online Management System" <deviieydevendranath@gmail.com>',
     to: userEmail,
     subject: `Order Confirmation - ${orderNumber}`,
     html: `
@@ -61,7 +61,7 @@ async function sendOrderConfirmationEmail(userEmail, orderNumber, address, userN
   };
 
   const adminMailOptions = {
-    from: "deviieydevendranath@gmail.com",
+    from: '"BMC Online Management System" <deviieydevendranath@gmail.com>',
     to: "deviieydevendranath@gmail.com",
     subject: `New Order Alert - ${orderNumber}`,
     html: `
