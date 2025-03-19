@@ -99,6 +99,7 @@ export class NavbarComponent implements OnInit {
     localStorage.removeItem('userId'); // Remove userId from localStorage
     this.userName = ''; // Reset userName
     this.isAdmin = false; // Reset isAdmin flag
+    this.clearChatHistory(); // Clear chat messages
     window.location.href = '/'; // Redirect to home page
     console.log('User logged out');
     this.menuOpen = false;
@@ -110,7 +111,9 @@ export class NavbarComponent implements OnInit {
     event.stopPropagation();
   }
   
- 
+  clearChatHistory() {
+    localStorage.removeItem('chatHistory');
+  }
 
   userDetails(){
     window.location.href = '/user-details';

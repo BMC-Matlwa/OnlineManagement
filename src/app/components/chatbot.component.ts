@@ -54,12 +54,12 @@ export class ChatbotComponent implements OnInit {
   handleUserMessage() {
     if (this.userInput.trim()) {
       this.chatMessages.push({ sender: this.userName + ' (ME)', message: this.userInput });
-
+  
       const botResponse = this.getBotResponse(this.userInput.toLowerCase());
       this.chatMessages.push(botResponse);
-
-      this.saveChatHistory(); // Save chat history after message
+  
       this.userInput = ''; // Clear input
+      this.saveChatHistory(); // Save chat messages
     }
   }
 
@@ -87,17 +87,17 @@ export class ChatbotComponent implements OnInit {
 
   selectOption(option: string) {
     this.chatMessages.push({ sender: this.userName + ' (ME)', message: option });
-
+  
     const predefinedResponses: { [key: string]: string } = {
       "What services do you offer?": "We provide web development, mobile apps, and cloud solutions.",
       "How can I contact support?": "You can reach our support team at deviieydevendranath@gmail.com",
       "What are your working hours?": "Our working hours are Monday to Friday, 9 AM - 6 PM."
     };
-
+  
     const responseMessage = predefinedResponses[option] || "I'm not sure about that. Can you rephrase?";
     this.chatMessages.push({ sender: 'Bubbles', message: responseMessage });
-
-    this.saveChatHistory(); // Save chat history after option selection
+  
+    this.saveChatHistory(); // Save chat messages
   }
 
   saveChatHistory() {
@@ -105,9 +105,19 @@ export class ChatbotComponent implements OnInit {
   }
 
   loadChatHistory() {
-    const storedHistory = localStorage.getItem('chatHistory');
-    if (storedHistory) {
-      this.chatMessages = JSON.parse(storedHistory);
+    const savedChats = localStorage.getItem('chatHistory');
+    if (savedChats) {
+      this.chatMessages = JSON.parse(savedChats);
     }
+  }
+  // loadChatHistory() {
+  //   const storedHistory = localStorage.getItem('chatHistory');
+  //   if (storedHistory) {
+  //     this.chatMessages = JSON.parse(storedHistory);
+  //   }
+  // }
+
+  clearChatHistory() {
+    localStorage.removeItem('chatHistory');
   }
 }
