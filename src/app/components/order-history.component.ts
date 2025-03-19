@@ -7,11 +7,12 @@ import { NavbarComponent } from '../components/navbar.component';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { ChatbotComponent } from './chatbot.component';
 
 @Component({
   selector: 'app-order-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, NgxPaginationModule, ChatbotComponent],
   templateUrl: './order-history.component.html',
   styleUrl: './order-history.component.css'
 })

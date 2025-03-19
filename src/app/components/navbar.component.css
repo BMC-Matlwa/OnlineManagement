@@ -272,8 +272,12 @@
   color: #fff;
   animation: scrollText 30s linear infinite;
 }
+.welcome-text span {
+  display: inline-block;
+  padding-right: 50px; /* Space between repeated texts */
+}
 
 @keyframes scrollText {
-  from { transform: translateX(100%); } /* Start from right */
-  to { transform: translateX(-100%); } /* Move to left */
+  from { transform: translateX(0); } /* Start from the full container width */
+  to { transform: translateX(-50%); } /* Only move halfway to repeat seamlessly */
 }

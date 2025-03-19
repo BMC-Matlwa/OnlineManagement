@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';  
 import { NavbarComponent } from '../components/navbar.component'; 
+import { ChatbotComponent } from './chatbot.component';
 
 @Component({
   selector: 'app-order-cart',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, ChatbotComponent],
   templateUrl: './order-cart.component.html',
   styleUrl: './order-cart.component.css'
 })

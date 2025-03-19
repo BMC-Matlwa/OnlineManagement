@@ -7,6 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Product } from '../product.model'; 
 import { NavbarComponent } from '../components/navbar.component'; 
+import { ChatbotComponent } from './chatbot.component';
 import { take } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,7 +25,7 @@ import autoTable from 'jspdf-autotable';
   standalone: true,
   imports: [MatTabsModule,
     MatTableModule,
-    MatButtonModule,CommonModule, FormsModule, NavbarComponent],
+    MatButtonModule,CommonModule, FormsModule, NavbarComponent, ChatbotComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })

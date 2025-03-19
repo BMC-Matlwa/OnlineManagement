@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute } from '@angular/router';
 import { MatTabGroup } from '@angular/material/tabs';
 import { MatDialog } from '@angular/material/dialog';
+import { ChatbotComponent } from './chatbot.component';
 
 
 
@@ -21,7 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
     standalone: true,
         imports: [MatTabsModule,
           MatTableModule,
-          MatButtonModule,CommonModule, FormsModule, NavbarComponent],
+          MatButtonModule,CommonModule, FormsModule, NavbarComponent, ChatbotComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css'],
     

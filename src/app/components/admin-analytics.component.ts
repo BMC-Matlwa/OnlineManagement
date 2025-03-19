@@ -10,13 +10,14 @@ import { NgChartsModule } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ChatbotComponent } from './chatbot.component';
 
 
 
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [NavbarComponent, CommonModule, NgChartsModule, FormsModule],
+  imports: [NavbarComponent, CommonModule, NgChartsModule, FormsModule, ChatbotComponent],
   templateUrl: './admin-analytics.component.html',
   styleUrl: './admin-analytics.component.css'
 })

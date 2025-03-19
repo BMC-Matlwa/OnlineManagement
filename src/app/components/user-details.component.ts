@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { NavbarComponent } from '../components/navbar.component'; 
+import { ChatbotComponent } from './chatbot.component';
 
 
 @Component({
   selector: 'app-user-details',
   standalone: true,
-    imports: [FormsModule, CommonModule, NavbarComponent],
+    imports: [FormsModule, CommonModule, NavbarComponent, ChatbotComponent],
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.css']
 })

@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { NavbarComponent } from '../components/navbar.component'; 
 import { DataService } from '../data.service'; 
 import { CommonModule } from '@angular/common';
+import { ChatbotComponent } from './chatbot.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NavbarComponent, CommonModule],
+  imports: [NavbarComponent, CommonModule, ChatbotComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

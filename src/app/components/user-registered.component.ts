@@ -7,11 +7,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Product } from '../product.model'; 
 import { NavbarComponent } from '../components/navbar.component'; 
+import { ChatbotComponent } from './chatbot.component';
 
 @Component({
   selector: 'app-user-registered',
   standalone: true,
-  imports: [CommonModule, FormsModule,NavbarComponent],
+  imports: [CommonModule, FormsModule,NavbarComponent, ChatbotComponent],
   templateUrl: './user-registered.component.html',
   styleUrl: './user-registered.component.css'
 })
